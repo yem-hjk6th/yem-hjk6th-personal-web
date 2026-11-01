@@ -1,0 +1,8 @@
+---
+// Placeholder artwork until real project photos exist. Decorative only.
+import { glyph } from '../lib/glyph';
+interface Props { slug: string; class?: string }
+const { slug, class: cls } = Astro.props;
+const { motif, svg } = glyph(slug);
+---
+<svg class:list={['glyph', cls]} viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false" data-motif={motif} set:html={svg} />

@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import { profile } from '../lib/content';
+import '../styles/shared.css';
+const variants = [
+  { href: '/v1/', name: 'Variant 1', line: 'Light concrete-grey page in one expanded typeface; the hero prints a twisting column bead by bead, and projects read as a layered log.' },
+  { href: '/v2/', name: 'Variant 2', line: 'Swiss grid with navy and serif type (academic register); the hero is a strut lattice that builds up as you scroll, and projects sit in a filterable card grid.' },
+  { href: '/v3/', name: 'Variant 3', line: 'Variant 1 plus React Bits effects: the name reacts to the pointer, the bio reveals on scroll, and cards light up; the hero prints a Hilbert-curve panel.' },
+];
+---
+<Base title="Choose a homepage" description="Three homepage drafts for comparison." noindex>
+  <main id="main" class="wrap chooser">
+    <h1>{profile.name}: three homepage drafts</h1>
+    <p class="lede">Each one uses the same content. Open them side by side and pick one; the others will be removed.</p>
+    <ol>
+      {variants.map((v) => (
+        <li><a href={v.href}><span class="name">{v.name}</span><span class="line">{v.line}</span></a></li>
+      ))}
+    </ol>
+  </main>
+</Base>
+<style>
+  .chooser { padding-block: clamp(3rem, 10vh, 7rem); max-width: 48rem; }
+  h1 { font-variation-settings: 'wdth' 112; font-weight: 750; font-size: clamp(1.9rem, 5vw, 3rem); line-height: 1.05; margin: 0 0 1rem; letter-spacing: -.01em; }
+  .lede { color: var(--muted); margin: 0 0 2.5rem; max-width: 38rem; }
+  ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
+  a { display: grid; gap: .35rem; padding: 1.25rem 1.4rem; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; text-decoration: none; color: var(--ink); }
+  a:hover { border-color: var(--accent); }
+  .name { font-weight: 700; font-size: 1.25rem; color: var(--accent); }
+  .line { color: var(--muted); }
+</style>

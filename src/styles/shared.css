@@ -1,0 +1,14 @@
+/* Neutral styles for the chooser and the project pages shared by all variants. */
+@import '@fontsource-variable/archivo/wdth.css';
+:root {
+  --bg: #EEEFEB; --surface: #FAFAF8; --ink: #1B2024; --muted: #4F575E; --line: #C9CCC6;
+  --accent: #2B3FC4; --todo-bg: #FFF3C4; --todo-ink: #5A4500;
+  --font: 'Archivo Variable', system-ui, sans-serif;
+}
+body { background: var(--bg); color: var(--ink); font: 400 1.0625rem/1.6 var(--font); }
+a { color: var(--accent); text-underline-offset: .18em; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+.wrap { max-width: 72rem; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 3rem); }
+.todo { display: inline-block; border: 1px dashed var(--todo-ink); background: var(--todo-bg); color: var(--todo-ink); padding: .1rem .5rem; border-radius: 4px; font-size: .875rem; }
+.draft-label { display: inline-block; background: var(--todo-bg); color: var(--todo-ink); border: 1px solid #D9C277; font-size: .8125rem; font-weight: 600; padding: .05rem .5rem; border-radius: 999px; vertical-align: middle; }
