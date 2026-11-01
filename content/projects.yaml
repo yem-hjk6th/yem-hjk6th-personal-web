@@ -92,7 +92,17 @@
   what_i_did: "Built an insulated test box with heat-flux sensors and thermocouples, following the ASTM C1046 and C1155 methods, with 24-bit data acquisition on an Arduino and Python analysis. Results are not yet published."
   result: null
   links: []
-  media: []
+  media:
+    thumbnail:
+      src: heat-flux-test-box/box_section_plain.svg
+      alt: "Half section of the insulated test box: heating mat, aluminium plate and printed panel with heat-flux sensors and thermocouples"
+    images:
+      - src: heat-flux-test-box/box_section.svg
+        alt: "Labelled half section of the test box with an enlarged view of the layer stack at the panel centre"
+        credit: "Drawing generated from the build documentation"
+      - src: heat-flux-test-box/wiring.svg
+        alt: "Signal chain: three heat-flux sensors to a 24-bit ADC, an Arduino and a PC logger; four thermocouples to a separate logger"
+        credit: "Drawing generated from the logger code"
 - slug: hsr-station-competitions
   title: "High-speed-rail station competitions"
   years: "2021 - 2022"
