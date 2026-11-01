@@ -50,13 +50,13 @@
   media:
     thumbnail:
       src: living-column/3-CT-Lab_Bioph.jpg
-      alt: "The printed clay Living Column on display"
+      alt: "The lower, printed part of the Living Column: clay coils overgrown with white mycelium, behind the display-case glass"
       zoom: 1.6
       focus: "52% 72%"
       credit: "Photo: CT .lab, University of Virginia, 2025"
     images:
       - src: living-column/3-CT-Lab_Bioph.jpg
-        alt: "The printed clay Living Column on display"
+        alt: "The lower, printed part of the Living Column: clay coils overgrown with white mycelium, behind the display-case glass"
         zoom: 1.6
         focus: "52% 72%"
         credit: "Photo: CT .lab, University of Virginia, 2025"
