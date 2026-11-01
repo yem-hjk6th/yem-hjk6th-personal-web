@@ -18,8 +18,10 @@ interface Props {
 }
 const { image, slug, size, class: cls, showCredit = true, showTodo = true } = Astro.props;
 const style = image?.url ? `--focus: ${image.focus}; --zoom: ${image.zoom};` : undefined;
+// Wide technical drawings must not be cropped on the project page; photos fill the frame.
+const fit = image?.fit ?? (size === 'large' && image && /\.svg$/i.test(image.src) ? 'contain' : 'cover');
 ---
-<figure class:list={['media', `media-${size}`, cls]}>
+<figure class:list={['media', `media-${size}`, image?.url && `fit-${fit}`, cls]}>
   <div class="frame" style={style}>
     {image?.url
       ? <img src={image.url} alt={image.alt} loading={size === 'thumb' ? 'lazy' : 'eager'} decoding="async" />
@@ -44,6 +46,11 @@ const style = image?.url ? `--focus: ${image.focus}; --zoom: ${image.zoom};` : u
     object-fit: cover; object-position: var(--focus, 50% 50%);
     transform: scale(var(--zoom, 1)); transform-origin: var(--focus, 50% 50%);
   }
+  /* contain: show the whole image. Large frames take the image's own aspect
+     ratio (no letterbox); thumbnails keep their frame and letterbox inside it. */
+  .fit-contain .frame img { object-fit: contain; }
+  .media-large.fit-contain .frame { aspect-ratio: auto; }
+  .media-large.fit-contain .frame img { height: auto; }
   .frame :global(svg) { width: 100%; height: 100%; padding: 6%; }
   figcaption { margin-top: .75rem; display: grid; gap: .5rem; justify-items: start; }
   .credit { color: var(--muted); font-size: .9375rem; }

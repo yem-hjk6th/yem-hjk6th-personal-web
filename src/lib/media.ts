@@ -6,6 +6,10 @@
 // and scale); the file itself is never edited:
 //   zoom:  number >= 1, e.g. 1.6 (default 1)
 //   focus: "X% Y%", the point the zoom centres on, e.g. "52% 72%" (default "50% 50%")
+//   fit:   "cover" (fill the frame, cropping) or "contain" (show the whole image).
+//          Default: "contain" for SVG drawings among the large images (shown at
+//          their own aspect ratio, uncropped), "cover" for everything else.
+//          Thumbnails keep their 4:3 frame; with "contain" they letterbox.
 // When a field is empty, or its file is not in the repo yet, pages show the
 // generated drawing instead.
 import fs from 'node:fs';
@@ -16,6 +20,7 @@ export interface MediaImage {
   alt: string;
   zoom?: number;
   focus?: string;
+  fit?: 'cover' | 'contain';
   credit?: string;
   caption?: string;
 }
@@ -44,6 +49,7 @@ export function resolveImage(img: MediaImage | undefined, slug: string): Resolve
   const focus = img.focus ?? '50% 50%';
   if (typeof zoom !== 'number' || zoom < 1 || zoom > 4) throw new Error(`${slug}: media zoom must be a number from 1 to 4 (got ${img.zoom})`);
   if (!FOCUS.test(focus)) throw new Error(`${slug}: media focus must look like "52% 72%" (got ${img.focus})`);
+  if (img.fit !== undefined && img.fit !== 'cover' && img.fit !== 'contain') throw new Error(`${slug}: media fit must be "cover" or "contain" (got ${img.fit})`);
   return { ...img, zoom, focus, url: fileUrl(img.src), path: `public/media/${img.src}` };
 }
 

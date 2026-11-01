@@ -38,6 +38,7 @@ media:
     alt: "What the photo shows"          # required
     zoom: 1.6                            # optional, display-only zoom (1 to 4)
     focus: "52% 72%"                     # optional, point to zoom on (x% y%)
+    fit: cover                           # optional, cover (crop to frame) or contain (whole image)
     credit: "Photo: CT .lab, University of Virginia, 2025"   # optional
   images:                                # large images on the project page
     - src: living-column/photo.jpg
@@ -56,6 +57,12 @@ media:
 `object-position` and `scale`); the file is never edited. The thumbnail frame is
 4:3 and the large frame 3:2, so any photo works, and `focus` picks what stays
 in view.
+
+`fit` decides whether an image is cropped. By default, SVG drawings among the
+large `images` use `contain`: they are shown whole, at their own aspect ratio,
+so wide diagrams keep all their labels. Everything else uses `cover`, which
+fills the frame. Thumbnails always keep their 4:3 frame; with `fit: contain`
+they are letterboxed inside it.
 
 Expected sizes:
 
