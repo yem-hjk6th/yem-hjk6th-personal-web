@@ -5,8 +5,8 @@
   role: "Doctoral research. I instrumented the lab's KUKA KR10 pellet-extrusion cell with RSI telemetry, a stereo camera, a bead camera and a nozzle borescope on custom printed mounts, wrote a logger that records robot pose, speed and commanded extruder speed in sync with video, calibrated the camera to the robot, and trained a model that reads bead width from borescope images. The robot, extruder and base control chain were set up earlier in the lab."
   credits: "Computational Tectonics Lab, University of Virginia; advisor Ehsan Baharlou."
   problem: "In robotic extrusion the robot slows at corners while the extruder keeps its commanded speed, so the deposited bead changes. The process is hard to observe while it runs."
-  what_i_did: "Built the sensing and logging setup, ran printing experiments, calibrated the stereo camera to the robot, profiled depth accuracy against distance, and benchmarked deep-learning models for bead-width measurement. Then built a closed-loop controller: a camera reads the bead width while printing, and the PC adjusts the robot's speed override through RSI every few milliseconds. Closed-loop prints ran in 2026; results are in preparation."
-  result: null
+  what_i_did: "Built the sensing and logging setup, ran printing experiments, calibrated the stereo camera to the robot, profiled depth accuracy against distance, and benchmarked deep-learning models for bead-width measurement. Then built a closed-loop controller: a camera reads the bead width while printing, and the PC adjusts the robot's speed override through RSI every few milliseconds."
+  result: "Closed-loop prints ran in 2026; results are in preparation."
   links:
     - label: "ROS 2 port of the closed-loop pipeline (code and a real session log)"
       url: "https://github.com/yem-hjk6th/RSI_proj_ROS"
@@ -15,7 +15,7 @@
   title: "ROS 2 port of a robot speed-override controller"
   years: "2026"
   tags: [robotics, software]
-  role: "Author."
+  role: "Author. Implemented with Claude Code (AI coding assistant)."
   credits: "Repository author: Ye Ma."
   problem: "A lab pipeline that controls a KUKA robot's speed in real time ran as Windows scripts. To share it and reuse it on another robot, it needed a tested, documented code base."
   what_i_did: "Ported the pipeline to ROS 2 (Jazzy): an RSI bridge with a 4 ms reply loop in its own process, the control law, the camera width readout, an EthernetKRL bridge for a robot without RSI, session recording with rosbag2, and a replay of a real print that checks the port against the original logs. Safety rules (no path correction, override clamp, watchdog ramp) are enforced in code and tested in CI."
@@ -28,7 +28,7 @@
   title: "Toolpath-informed mycelium-mineral panels"
   years: "2025"
   tags: [fabrication, aec, robotics]
-  role: "Co-author."
+  role: "Co-author. Digital fabrication: implemented the three toolpath algorithms (Poisson-disk + TSP, Kangaroo, Hilbert), computed the predicted growth area, and printed the panels on the KUKA robot."
   credits: "With I. Datta and E. Baharlou (ACADIA 2025)."
   problem: "Printed mineral panels can host mycelium growth, and the printed path shapes how much surface the fungus can colonize."
   what_i_did: "The paper compares three toolpath strategies (Poisson-disk sampling with a travelling-salesman route, Kangaroo physics, and a recursive Hilbert curve) for robotically printed 400 x 400 mm oyster-shell mineral panels."
@@ -41,13 +41,25 @@
   title: "Living Column exhibition"
   years: "2025"
   tags: [aec, fabrication]
-  role: "Research assistant on the exhibited piece."
+  role: "Research assistant: robotic printing of the column and, with I. Datta, installation of the display case."
   credits: "Created by Ehsan Baharlou; research assistants I. Datta and Y. Ma."
   problem: "Show a printed clay column colonized by mycelium as a built, living object."
-  what_i_did: "Supported fabrication of the printed column as a research assistant."
+  what_i_did: "Robotically printed the clay column to E. Baharlou's pattern design, and installed the display case together with I. Datta."
   result: null
   links: []
-  media: []
+  media:
+    thumbnail:
+      src: living-column/3-CT-Lab_Bioph.jpg
+      alt: "The printed clay Living Column on display"
+      zoom: 1.6
+      focus: "52% 72%"
+      credit: "Photo: CT .lab, University of Virginia, 2025"
+    images:
+      - src: living-column/3-CT-Lab_Bioph.jpg
+        alt: "The printed clay Living Column on display"
+        zoom: 1.6
+        focus: "52% 72%"
+        credit: "Photo: CT .lab, University of Virginia, 2025"
 - slug: clay-paste-extruder
   title: "Clay paste extruder commissioning"
   years: "2024"
@@ -67,6 +79,17 @@
   credits: "With E. Baharlou (ARCC 2025)."
   problem: "Wood layers bend as moisture changes. Predicting the bending from measurements would help designers use it."
   what_i_did: "Built an Arduino humidity chamber and a Raspberry Pi webcam pipeline (OpenCV edge and Hough analysis) to measure curvature of wood bilayer samples, then compared regression models against an analytical baseline."
+  result: null
+  links: []
+  media: []
+- slug: heat-flux-test-box
+  title: "Heat-flux test box for printed panels"
+  years: "2025 - 2026"
+  tags: [aec, sensing]
+  role: "Designed the test box and the measurement: heat-flux sensors and thermocouples with 24-bit acquisition on an Arduino, the logging code, and the test protocol following ASTM C1046 and C1155."
+  credits: "With I. Datta and E. Baharlou."
+  problem: "Measure how well printed mycelium-mineral panels resist heat flow in place."
+  what_i_did: "Built an insulated test box with heat-flux sensors and thermocouples, following the ASTM C1046 and C1155 methods, with 24-bit data acquisition on an Arduino and Python analysis. Results are not yet published."
   result: null
   links: []
   media: []
