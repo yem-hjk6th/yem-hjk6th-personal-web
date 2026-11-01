@@ -91,7 +91,7 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
           <ul class="timeline">
             {experience.map((e) => (
               <li>
-                <span class="t-years">{e.years ?? <span class="todo">TODO: years</span>}</span>
+                <span class="t-years">{e.years}</span>
                 <span class="t-body"><strong>{e.role}</strong>, {e.org}{e.location && `, ${e.location}`}. {e.summary}</span>
               </li>
             ))}
