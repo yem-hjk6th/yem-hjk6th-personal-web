@@ -89,3 +89,22 @@ or a reading moment:
 Hero: the same bead sweep, but the toolpath is a Hilbert curve (one of the
 three toolpath strategies in the ACADIA 2025 mycelium-mineral paper), printed
 as a shallow panel.
+
+## Round 2: chosen direction
+
+Ye chose variant 3. It is now the homepage at `/`; variants 1 and 2 and the
+chooser were removed (their code is in the git history of PR #1).
+
+Dark theme only, with a blue + gold accent pair:
+
+- One background token, `--bg`, with two candidates (`#000000` and `#4D4D4D`).
+  Every text colour was chosen to pass WCAG AA on both, so either can be kept
+  without re-checking contrast. Rules and raised surfaces are mixed from `--bg`
+  (`color-mix`), so they follow it.
+- Blue `#A3C8FF` for links and controls at rest; gold `#F2C14E` for hover,
+  focus and pressed states. The two have almost the same lightness, so each
+  state also changes form (thicker underline, outline, filled button), never
+  colour alone.
+- Hilbert hero: light grey bead, gold where the bead swells at corners, blue
+  nozzle. SpotlightCard uses its dark palette with a blue light; its surface is
+  transparent so rows sit on either background.

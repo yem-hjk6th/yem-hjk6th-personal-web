@@ -1,14 +1,45 @@
-/* Neutral styles for the chooser and the project pages shared by all variants. */
+/* Site theme: dark only.
+ *
+ * The page background is one token, --bg. Ye is choosing between
+ * #000000 and #4D4D4D; every other colour below passes WCAG AA (4.5:1)
+ * for text on both, and the derived tones are mixed from --bg so they
+ * follow it automatically.
+ *
+ *   token     hex       on #000000   on #4D4D4D
+ *   --ink     #F2F2F2   18.76:1      7.55:1     body text
+ *   --muted   #C8C8C8   12.55:1      5.05:1     secondary text
+ *   --blue    #A3C8FF   12.26:1      4.94:1     links, UI at rest
+ *   --gold    #F2C14E   12.51:1      5.04:1     hover, focus, active
+ *
+ * Blue and gold differ in hue, not lightness (1.02:1), so state changes
+ * never rely on colour alone: hover thickens the underline, focus adds
+ * an outline, pressed buttons fill.
+ */
 @import '@fontsource-variable/archivo/wdth.css';
+
 :root {
-  --bg: #EEEFEB; --surface: #FAFAF8; --ink: #1B2024; --muted: #4F575E; --line: #C9CCC6;
-  --accent: #2B3FC4; --todo-bg: #FFF3C4; --todo-ink: #5A4500;
+  --bg: #000000;
+  --ink: #F2F2F2;
+  --muted: #C8C8C8;
+  --blue: #A3C8FF;
+  --gold: #F2C14E;
+  --on-accent: #000000;          /* text on a blue or gold fill (>= 10.9:1) */
+  --rule: color-mix(in srgb, var(--bg), #FFFFFF 30%);
+  --surface: color-mix(in srgb, var(--bg), #FFFFFF 7%);
+  --todo-bg: #F2C14E;
+  --todo-ink: #3D2E00;           /* 7.87:1 on --todo-bg */
   --font: 'Archivo Variable', system-ui, sans-serif;
+  color-scheme: dark;
 }
+
+html { background: var(--bg); }
 body { background: var(--bg); color: var(--ink); font: 400 1.0625rem/1.6 var(--font); }
-a { color: var(--accent); text-underline-offset: .18em; }
-a:hover { text-decoration-thickness: 2px; }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: .18em; }
+a:hover { color: var(--gold); text-decoration-thickness: 3px; }
+a:active { color: var(--gold); }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 3px; }
+
+.todo { display: inline-block; border: 1px dashed var(--todo-ink); background: var(--todo-bg); color: var(--todo-ink); padding: .05rem .5rem; border-radius: 4px; font-size: .875rem; font-weight: 500; max-width: 100%; overflow-wrap: anywhere; }
+.draft-label { display: inline-block; background: var(--todo-bg); color: var(--todo-ink); font-size: .8125rem; font-weight: 650; padding: .05rem .55rem; border-radius: 999px; vertical-align: middle; font-variation-settings: 'wdth' 90; }
 .wrap { max-width: 72rem; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 3rem); }
-.todo { display: inline-block; border: 1px dashed var(--todo-ink); background: var(--todo-bg); color: var(--todo-ink); padding: .1rem .5rem; border-radius: 4px; font-size: .875rem; }
-.draft-label { display: inline-block; background: var(--todo-bg); color: var(--todo-ink); border: 1px solid #D9C277; font-size: .8125rem; font-weight: 600; padding: .05rem .5rem; border-radius: 999px; vertical-align: middle; }

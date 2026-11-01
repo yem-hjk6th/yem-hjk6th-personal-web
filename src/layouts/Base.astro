@@ -1,8 +1,8 @@
 ---
 import { profile } from '../lib/content';
 import { archivoFonts } from '../lib/fonts';
-interface Props { title?: string; description?: string; bodyClass?: string; noindex?: boolean; fonts?: string[] }
-const { title, description = profile.headlines.robotics_cv, bodyClass, noindex = false, fonts = archivoFonts } = Astro.props;
+interface Props { title?: string; description?: string; noindex?: boolean }
+const { title, description = profile.headlines.robotics_cv, noindex = false } = Astro.props;
 const fullTitle = title ? `${title} | ${profile.name}` : profile.name;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -11,15 +11,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    {fonts.map((f) => <link rel="preload" href={f} as="font" type="font/woff2" crossorigin />)}
+    {archivoFonts.map((f) => <link rel="preload" href={f} as="font" type="font/woff2" crossorigin />)}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {noindex && <meta name="robots" content="noindex" />}
     <slot name="head" />
   </head>
-  <body class={bodyClass}>
+  <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <slot />
   </body>
@@ -30,7 +31,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   body { margin: 0; }
   img, svg, canvas { display: block; max-width: 100%; }
   [hidden] { display: none !important; }
-  .skip-link { position: absolute; left: 1rem; top: -4rem; z-index: 100; padding: .6rem 1rem; background: #fff; color: #000; border-radius: 4px; }
+  .skip-link { position: absolute; left: 1rem; top: -4rem; z-index: 100; padding: .6rem 1rem; background: var(--gold, #F2C14E); color: #000; border-radius: 4px; font-weight: 600; }
   .skip-link:focus { top: 1rem; }
   .sr-only, .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   html.lenis, html.lenis body { height: auto; }

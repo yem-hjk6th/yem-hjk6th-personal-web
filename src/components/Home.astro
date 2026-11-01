@@ -1,19 +1,16 @@
 ---
-// Variant 1 homepage ("Print bed"). Variant 3 reuses it with `enhanced`,
-// which swaps a few elements for React Bits islands and changes the hero path.
-import ProjectGlyph from '../ProjectGlyph.astro';
+// The homepage (chosen variant 3): variant 1's "Print bed" layout with
+// React Bits interactions, on the dark theme from styles/theme.css.
+import MediaFrame from './MediaFrame.astro';
 import {
   profile, projects, publications, presentations, exhibitions, experience,
   audiences, audiencesFor, tagLabel, firstSentence, contactLinks,
-} from '../../lib/content';
-import ProximityName from '../reactbits/ProximityName';
-import RevealBio from '../reactbits/RevealBio';
-import Spotlight from '../reactbits/Spotlight';
-import MagnetLink from '../reactbits/MagnetLink';
-
-interface Props { variant: 'v1' | 'v3' }
-const { variant } = Astro.props;
-const enhanced = variant === 'v3';
+} from '../lib/content';
+import { resolveImage } from '../lib/media';
+import ProximityName from './reactbits/ProximityName';
+import RevealBio from './reactbits/RevealBio';
+import Spotlight from './reactbits/Spotlight';
+import MagnetLink from './reactbits/MagnetLink';
 
 const pubsByYear = [...publications].sort((a, b) => b.year - a.year);
 const others = [
@@ -23,7 +20,7 @@ const others = [
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https://doi.org/${p.doi}` : null);
 ---
-<div class="v1" data-variant={variant}>
+<div class="home">
   <header class="bar">
     <a class="bar-name" href="#top">{profile.name}</a>
     <nav aria-label="Sections">
@@ -39,9 +36,7 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
         <canvas id="hero-canvas"></canvas>
       </div>
       <div class="hero-text">
-        <h1 id="name" class="name">
-          {enhanced ? <ProximityName client:load label={profile.name} /> : profile.name}
-        </h1>
+        <h1 id="name" class="name"><ProximityName client:load label={profile.name} /></h1>
         <p class="affil">{profile.affiliation}, {profile.location}</p>
       </div>
       <div class="entries">
@@ -49,7 +44,7 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
           <div class="entry">
             <h2 class="entry-label">{a.label}</h2>
             <p class="entry-headline">{a.headline}</p>
-            <button type="button" class="entry-btn" data-audience={a.id} data-label={a.label} data-scroll="#work" aria-pressed="false">
+            <button type="button" class="pill" data-audience={a.id} data-label={a.label} data-scroll="#work" aria-pressed="false">
               Show {a.label} projects
             </button>
           </div>
@@ -61,41 +56,36 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
       <div class="work-head">
         <h2 id="work-h" class="sec-h">Work</h2>
         <div class="filters" role="group" aria-label="Filter projects by audience">
-          <button type="button" data-audience="all" data-label="all" aria-pressed="true">All</button>
-          {audiences.map((a) => <button type="button" data-audience={a.id} data-label={a.label} aria-pressed="false">{a.label}</button>)}
+          <button type="button" class="pill" data-audience="all" data-label="all" aria-pressed="true">All</button>
+          {audiences.map((a) => <button type="button" class="pill" data-audience={a.id} data-label={a.label} aria-pressed="false">{a.label}</button>)}
         </div>
         <p class="filter-status" data-filter-status aria-live="polite"></p>
       </div>
-      <ol class="layers" reversed>
-        {projects.map((p) => {
-          const row = (
-            <a class="layer-link" href={`/projects/${p.slug}/?from=${variant}`}>
-              <ProjectGlyph slug={p.slug} class="layer-glyph" />
-              <span class="layer-main">
-                <span class="layer-title">{p.title}{p.status === 'draft' && <span class="draft-pill">In progress</span>}</span>
-                <span class="layer-problem">{firstSentence(p.problem)}</span>
-              </span>
-              <span class="layer-meta">
-                <span class="layer-years">{p.years}</span>
-                <span class="layer-tags">{p.tags.map((t) => tagLabel[t] ?? t).join(', ')}</span>
-              </span>
-            </a>
-          );
-          return (
-            <li class="layer" data-audiences={audiencesFor(p).join(' ')}>
-              {enhanced ? <Spotlight client:visible>{row}</Spotlight> : row}
-            </li>
-          );
-        })}
+      <ol class="layers">
+        {projects.map((p) => (
+          <li class="layer" data-audiences={audiencesFor(p).join(' ')}>
+            <Spotlight client:visible>
+              <a class="layer-link" href={`/projects/${p.slug}/`}>
+                <MediaFrame image={resolveImage(p.media.thumbnail, p.slug)} slug={p.slug} size="thumb" class="layer-thumb" />
+                <span class="layer-main">
+                  <span class="layer-title">{p.title}{p.status === 'draft' && <span class="draft-label">In progress</span>}</span>
+                  <span class="layer-problem">{firstSentence(p.problem)}</span>
+                </span>
+                <span class="layer-meta">
+                  <span class="layer-years">{p.years}</span>
+                  <span class="layer-tags">{p.tags.map((t) => tagLabel[t] ?? t).join(', ')}</span>
+                </span>
+              </a>
+            </Spotlight>
+          </li>
+        ))}
       </ol>
     </section>
 
     <section class="about" aria-labelledby="about-h">
       <h2 id="about-h" class="sec-h">About</h2>
       <div class="about-grid">
-        <div class="bio">
-          {enhanced ? <RevealBio client:visible text={profile.bio} /> : <p>{profile.bio}</p>}
-        </div>
+        <div class="bio"><RevealBio client:visible text={profile.bio} /></div>
         <div class="cv">
           <h3>Experience</h3>
           <ul class="timeline">
@@ -152,72 +142,55 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
         {contactLinks.map((c) => (
           <li>
             <span class="c-label">{c.label}</span>
-            {enhanced
-              ? <MagnetLink client:visible href={c.href} text={c.text} />
-              : <a href={c.href} rel="noopener">{c.text}</a>}
+            <MagnetLink client:visible href={c.href} text={c.text} />
           </li>
         ))}
       </ul>
     </section>
   </main>
-
-  <footer class="foot">
-    <p>Draft homepage {variant === 'v1' ? '1' : '3'} of 3. <a href="/">Compare drafts</a></p>
-  </footer>
 </div>
 
 <script>
-  import { initMotion } from '../../scripts/motion';
-  import { initFilter } from '../../scripts/filter';
-  import { mountHero } from '../../scripts/hero';
+  import { initMotion } from '../scripts/motion';
+  import { initFilter } from '../scripts/filter';
+  import { mountHero } from '../scripts/hero';
   initMotion();
   initFilter();
-  const root = document.querySelector<HTMLElement>('.v1');
-  const enhanced = root?.dataset.variant === 'v3';
-  mountHero(document.querySelector('#hero-canvas'), enhanced ? 'hilbert' : 'column',
-    { a: '#7D8794', b: '#D49A2A', c: '#2B3FC4' },
+  // Scene colours: light grey bead, gold where it swells at corners, blue nozzle.
+  mountHero(document.querySelector('#hero-canvas'), 'hilbert',
+    { a: '#B9BFC8', b: '#F2C14E', c: '#A3C8FF' },
     { trigger: document.querySelector('.hero'), start: 'top top', end: 'bottom top' });
 </script>
 
 <style>
-  .v1 {
-    --bg: #E7E8E3; --surface: #F6F6F3; --ink: #1B2024; --muted: #4F575E;
-    --accent: #2B3FC4; --amber: #C98A1B; --rule: #C3C6BF;
-    --pad: clamp(1rem, 4vw, 3.5rem);
-    background: var(--bg); color: var(--ink);
-    font-family: 'Archivo Variable', system-ui, sans-serif;
-    font-size: 1.0625rem; line-height: 1.6;
-  }
-  .v1 a { color: var(--accent); text-underline-offset: .18em; }
-  .v1 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
-  .v1 h1, .v1 h2, .v1 h3 { margin: 0; }
+  .home { --pad: clamp(1rem, 4vw, 3.5rem); }
+  .home h1, .home h2, .home h3 { margin: 0; }
 
   /* Bead rule: two stacked rounded lines, like printed layers. */
-  .v1 .sec-h, .v1 .layer { position: relative; }
-  .bead-rule, .v1 .layers, .v1 .layer {
-    background-image:
-      linear-gradient(var(--rule), var(--rule)), linear-gradient(var(--rule), var(--rule));
+  .layers, .layer {
+    background-image: linear-gradient(var(--rule), var(--rule)), linear-gradient(var(--rule), var(--rule));
     background-size: 100% 3px, 100% 3px; background-repeat: no-repeat;
     background-position: 0 100%, 0 calc(100% - 5px);
   }
 
   .bar { position: absolute; inset: 0 0 auto 0; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem var(--pad); }
-  .bar-name { font-weight: 700; color: var(--ink) !important; text-decoration: none; font-variation-settings: 'wdth' 112; }
+  .bar-name { font-weight: 700; color: var(--ink); text-decoration: none; font-variation-settings: 'wdth' 112; }
   .bar nav { display: flex; gap: clamp(.75rem, 3vw, 2rem); }
   .bar nav a { color: var(--ink); text-decoration: none; font-weight: 500; padding: .5rem 0; }
-  .bar nav a:hover { color: var(--accent); }
+  .bar a:hover { color: var(--gold); text-decoration: underline; text-decoration-thickness: 3px; }
 
   /* Hero */
   .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: 1fr auto auto; padding: 5rem var(--pad) 0;
-    background: repeating-linear-gradient(to bottom, transparent 0 7px, rgba(27,32,36,.035) 7px 8px); }
+    background: repeating-linear-gradient(to bottom, transparent 0 7px, color-mix(in srgb, var(--bg), #FFFFFF 5%) 7px 8px); }
   /* The CSS behind the canvas is the fallback when WebGL is unavailable. */
   .stage { position: absolute; top: 3.5rem; right: 0; width: 60%; height: max(18rem, calc(100svh - 20rem)); pointer-events: none;
-    background: repeating-linear-gradient(to bottom, transparent 0 10px, rgba(43,63,196,.07) 10px 14px) center / 60% 70% no-repeat; }
+    background: repeating-linear-gradient(to bottom, transparent 0 10px, color-mix(in srgb, var(--blue) 18%, transparent) 10px 14px) center / 60% 70% no-repeat; }
   .stage:has(canvas[data-ready]) { background: none; }
   .stage canvas { width: 100%; height: 100%; }
   .hero-text { position: relative; align-self: end; padding-bottom: 2rem; }
   .name { font-size: clamp(3.6rem, 13vw, 11.5rem); line-height: .86; font-weight: 820; letter-spacing: -.02em;
     font-variation-settings: 'wdth' 125; margin-left: -.04em; }
+  .name :global(.variable-proximity) { font-family: inherit; }
   .affil { margin: 1rem 0 0; font-size: clamp(1rem, 1.6vw, 1.25rem); color: var(--muted); font-variation-settings: 'wdth' 92; }
 
   .entries { position: relative; display: grid; grid-template-columns: 1fr; border-top: 3px solid var(--ink); }
@@ -227,12 +200,14 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   @media (min-width: 48rem) { .entry + .entry { border-top: 0; } }
   .entry-label { font-size: clamp(1.4rem, 2.6vw, 2rem); font-weight: 760; font-variation-settings: 'wdth' 118; line-height: 1.05; }
   .entry-headline { margin: 0; max-width: 46ch; }
-  .entry-btn, .filters button {
+
+  /* Buttons: blue outline at rest, gold on hover/focus, gold fill when pressed. */
+  .pill {
     font: inherit; font-weight: 600; cursor: pointer; justify-self: start; min-height: 44px;
-    padding: .55rem 1.1rem; border-radius: 999px; border: 2px solid var(--ink); background: transparent; color: var(--ink);
+    padding: .55rem 1.1rem; border-radius: 999px; border: 2px solid var(--blue); background: transparent; color: var(--blue);
   }
-  .entry-btn:hover, .filters button:hover { border-color: var(--accent); color: var(--accent); }
-  .entry-btn[aria-pressed='true'], .filters button[aria-pressed='true'] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .pill:hover { border-color: var(--gold); color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+  .pill[aria-pressed='true'] { background: var(--gold); border-color: var(--gold); color: var(--on-accent); box-shadow: none; }
 
   /* Work */
   .work, .about, .pubs, .contact { padding: clamp(4rem, 10vw, 7rem) var(--pad) 0; }
@@ -243,23 +218,27 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   .filter-status { margin: 0; color: var(--muted); font-variation-settings: 'wdth' 85; min-height: 1.6em; }
   .layers { list-style: none; margin: 0; padding: 0; background-position: 0 0, 0 5px; }
   .layer { padding-bottom: 8px; }
-  .layer-link { display: grid; grid-template-columns: 88px 1fr; gap: .4rem 1.25rem; padding: 1.4rem .25rem 1.25rem; text-decoration: none; color: var(--ink) !important; align-items: center; }
+  .layer :global(.v3-spot) { padding: 0; border-radius: 10px; background-color: transparent; box-shadow: none; }
+  .layer :global(.spotlight-card__border) { background: transparent; }
+  .layer-link { display: grid; grid-template-columns: 88px 1fr; gap: .4rem 1.25rem; padding: 1.4rem .25rem 1.25rem; text-decoration: none; color: var(--ink); align-items: center; }
   @media (min-width: 60rem) { .layer-link { grid-template-columns: 132px minmax(0, 1fr) 16rem; gap: 2rem; } }
-  .layer-link:hover .layer-title { color: var(--accent); text-decoration: underline; text-decoration-thickness: 2px; }
-  .layer-glyph { width: 88px; height: 66px; color: var(--accent); background: var(--surface); border-radius: 6px; padding: 4px; }
-  @media (min-width: 60rem) { .layer-glyph { width: 132px; height: 99px; } }
+  .layer-link:hover, .layer-link:active { color: var(--ink); }
+  .layer-link:hover .layer-title, .layer-link:focus-visible .layer-title { color: var(--gold); text-decoration: underline; text-decoration-thickness: 3px; }
+  .layer-link :global(.layer-thumb) { width: 88px; height: 66px; border-radius: 6px; overflow: hidden; }
+  @media (min-width: 60rem) { .layer-link :global(.layer-thumb) { width: 132px; height: 99px; } }
   .layer-main { display: grid; gap: .25rem; }
-  .layer-title { font-size: clamp(1.15rem, 2vw, 1.5rem); font-weight: 700; line-height: 1.2; font-variation-settings: 'wdth' 108; }
+  .layer-title { color: var(--blue); font-size: clamp(1.15rem, 2vw, 1.5rem); font-weight: 700; line-height: 1.2; font-variation-settings: 'wdth' 108; }
+  .layer-title .draft-label { margin-left: .6rem; vertical-align: .15em; }
   .layer-problem { color: var(--muted); max-width: 62ch; }
   .layer-meta { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: .25rem 1rem; font-variation-settings: 'wdth' 80; font-weight: 500; color: var(--muted); }
   @media (min-width: 60rem) { .layer-meta { grid-column: auto; display: grid; justify-items: end; text-align: right; } }
   .layer-years { color: var(--ink); font-weight: 650; }
-  .draft-pill { display: inline-block; margin-left: .6rem; vertical-align: .15em; font-size: .78rem; font-weight: 650; padding: .05rem .55rem; border-radius: 999px; background: #F3E3B5; color: #4D3A00; font-variation-settings: 'wdth' 90; }
 
   /* About */
   .about-grid { display: grid; gap: 2.5rem; margin-top: 2rem; }
   @media (min-width: 60rem) { .about-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 4rem; } }
-  .bio :global(p), .bio > p { margin: 0; font-size: clamp(1.2rem, 2vw, 1.5rem); line-height: 1.45; max-width: 36ch; font-variation-settings: 'wdth' 96; }
+  .bio :global(.bio-reveal) { margin: 0; }
+  .bio :global(.bio-reveal-text) { font-size: clamp(1.2rem, 2vw, 1.5rem); line-height: 1.45; font-weight: 400; max-width: 36ch; font-variation-settings: 'wdth' 96; }
   .cv h3, .sub-h { font-size: 1.125rem; font-weight: 750; font-variation-settings: 'wdth' 112; margin: 0 0 .75rem; }
   .cv h3:not(:first-child) { margin-top: 2rem; }
   .timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: .9rem; }
@@ -267,7 +246,6 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   @media (max-width: 30rem) { .timeline li, .pub-list li { grid-template-columns: 1fr; gap: .1rem; } }
   .t-years, .pub-year { font-variation-settings: 'wdth' 80; font-weight: 600; color: var(--muted); }
   .t-body { max-width: 66ch; }
-  .todo { border: 1px dashed #5A4500; background: #FFF3C4; color: #5A4500; padding: 0 .4rem; border-radius: 4px; font-size: .85rem; }
 
   /* Publications */
   .pub-list { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; gap: 1.4rem; }
@@ -279,15 +257,13 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   .pub-type { white-space: nowrap; }
 
   /* Contact */
-  .contact { padding-bottom: 5rem; }
-  .contact-list { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; gap: 0; }
+  .contact { padding-bottom: 6rem; }
+  .contact-list { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; }
   .contact-list li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; align-items: baseline; padding: 1rem 0; border-top: 1px solid var(--rule); }
   .c-label { color: var(--muted); font-variation-settings: 'wdth' 80; font-weight: 600; }
-  .contact-list a, .contact-list :global(a) { font-size: clamp(1.15rem, 3.2vw, 2.1rem); font-weight: 700; font-variation-settings: 'wdth' 110; overflow-wrap: anywhere; line-height: 1.2; }
+  .contact-list :global(.magnet-wrap) { display: inline-block; }
+  .contact-list :global(a) { font-size: clamp(1.15rem, 3.2vw, 2.1rem); font-weight: 700; font-variation-settings: 'wdth' 110; overflow-wrap: anywhere; line-height: 1.2; }
   @media (max-width: 30rem) { .contact-list li { grid-template-columns: 1fr; gap: .1rem; } }
-
-  .foot { padding: 2rem var(--pad) 3rem; color: var(--muted); border-top: 3px solid var(--ink); margin: 0 var(--pad); padding-inline: 0; }
-  .foot p { margin: 0; }
 
   @media (max-width: 47.99rem) {
     .stage { top: 3.5rem; left: 0; width: 100%; height: 40svh; }

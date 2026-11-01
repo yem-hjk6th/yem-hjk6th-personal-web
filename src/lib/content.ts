@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { load as parseYaml } from 'js-yaml';
+import { normalizeMedia, type Media } from './media';
 
 const dir = path.resolve(process.cwd(), 'content');
 const load = <T>(name: string): T => parseYaml(fs.readFileSync(path.join(dir, name), 'utf8')) as T;
@@ -20,7 +21,7 @@ export interface Project {
   what_i_did: string;
   result: string | null;
   links: Link[];
-  media: unknown[];
+  media: Media;
 }
 export interface Publication {
   type: string;
@@ -48,7 +49,7 @@ interface PublicationsFile {
 }
 
 export const profile = load<Profile>('profile.yaml');
-export const projects = load<Project[]>('projects.yaml');
+export const projects = load<Project[]>('projects.yaml').map((p) => ({ ...p, media: normalizeMedia(p.media, p.slug) }));
 export const experience = load<Experience[]>('experience.yaml');
 const pubs = load<PublicationsFile>('publications.yaml');
 export const publications = pubs.publications;
@@ -86,6 +87,7 @@ export const tagLabel: Record<string, string> = {
   fabrication: 'Fabrication',
   aec: 'AEC',
   design: 'Design',
+  sensing: 'Sensing',
 };
 
 /** First sentence of a field, for compact listings. */

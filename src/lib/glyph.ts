@@ -15,7 +15,7 @@ const rng = (seed: number) => () => {
 };
 const f = (n: number) => n.toFixed(1);
 
-export type Motif = 'raster' | 'graph' | 'hilbert' | 'contour' | 'spiral' | 'arcs' | 'plan' | 'cloud' | 'warp';
+export type Motif = 'raster' | 'graph' | 'hilbert' | 'contour' | 'spiral' | 'arcs' | 'plan' | 'cloud' | 'warp' | 'flux';
 
 const bySlug: Record<string, Motif> = {
   'vision-guided-pellet-extrusion': 'raster',
@@ -24,11 +24,12 @@ const bySlug: Record<string, Motif> = {
   'living-column': 'contour',
   'clay-paste-extruder': 'spiral',
   'wood-hygroscopic-ml': 'arcs',
+  'heat-flux-test-box': 'flux',
   'hsr-station-competitions': 'plan',
   'cs6501-3dcv-pointcloud-robustness': 'cloud',
   'cs6501-fourier-net-registration': 'warp',
 };
-const all: Motif[] = ['raster', 'graph', 'hilbert', 'contour', 'spiral', 'arcs', 'plan', 'cloud', 'warp'];
+const all: Motif[] = ['raster', 'graph', 'hilbert', 'contour', 'spiral', 'arcs', 'plan', 'cloud', 'warp', 'flux'];
 
 function hilbert(order: number, size: number, pad: number) {
   const n = 2 ** order;
@@ -128,6 +129,18 @@ export function glyph(slug: string, W = 400, H = 300): { motif: Motif; svg: stri
         const s = 1 / (2.4 - z);
         out.push(`<circle cx="${f(W / 2 + x * 230 * s)}" cy="${f(H / 2 + y * 230 * s)}" r="${f(1.4 + z * 0.8)}" fill="currentColor" opacity="${(0.45 + z * 0.4).toFixed(2)}"/>`);
       }
+      break;
+    }
+    case 'flux': {
+      // A test panel between a warm and a cold side, with flow lines and sensor points.
+      out.push(`<rect x="${W / 2 - 18}" y="40" width="36" height="${H - 80}" rx="4" fill="currentColor" opacity="0.35"/>`);
+      for (let i = 0; i < 7; i++) {
+        const y = 60 + i * ((H - 120) / 6);
+        const wob = 6 + r() * 6;
+        path(`M40 ${f(y)} C ${f(W / 2 - 80)} ${f(y - wob)}, ${f(W / 2 + 80)} ${f(y + wob)}, ${W - 40} ${f(y)}`, 1.8, 0.8);
+      }
+      [[W / 2 - 18, 90], [W / 2 - 18, H - 90], [W / 2 + 18, 90], [W / 2 + 18, H - 90]].forEach(([x, y]) =>
+        out.push(`<circle cx="${x}" cy="${y}" r="7" fill="currentColor"/>`));
       break;
     }
     case 'warp': {
