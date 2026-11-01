@@ -1,0 +1,45 @@
+/* Site theme: dark only.
+ *
+ * The page background is pure black, #000000 (Ye's choice). It stays a
+ * single token, --bg, so it can change later: the derived tones are mixed
+ * from --bg, and the text colours below were also checked on a lighter
+ * candidate (#4D4D4D), where they still pass WCAG AA (4.5:1).
+ *
+ *   token     hex       on #000000   on #4D4D4D
+ *   --ink     #F2F2F2   18.76:1      7.55:1     body text
+ *   --muted   #C8C8C8   12.55:1      5.05:1     secondary text
+ *   --blue    #A3C8FF   12.26:1      4.94:1     links, UI at rest
+ *   --gold    #F2C14E   12.51:1      5.04:1     hover, focus, active
+ *
+ * Blue and gold differ in hue, not lightness (1.02:1), so state changes
+ * never rely on colour alone: hover thickens the underline, focus adds
+ * an outline, pressed buttons fill.
+ */
+@import '@fontsource-variable/archivo/wdth.css';
+
+:root {
+  --bg: #000000;
+  --ink: #F2F2F2;
+  --muted: #C8C8C8;
+  --blue: #A3C8FF;
+  --gold: #F2C14E;
+  --on-accent: #000000;          /* text on a blue or gold fill (>= 10.9:1) */
+  --rule: color-mix(in srgb, var(--bg), #FFFFFF 30%);
+  --surface: color-mix(in srgb, var(--bg), #FFFFFF 7%);
+  --todo-bg: #F2C14E;
+  --todo-ink: #3D2E00;           /* 7.87:1 on --todo-bg */
+  --font: 'Archivo Variable', system-ui, sans-serif;
+  color-scheme: dark;
+}
+
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--ink); font: 400 1.0625rem/1.6 var(--font); }
+
+a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: .18em; }
+a:hover { color: var(--gold); text-decoration-thickness: 3px; }
+a:active { color: var(--gold); }
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 3px; }
+
+.todo { display: inline-block; border: 1px dashed var(--todo-ink); background: var(--todo-bg); color: var(--todo-ink); padding: .05rem .5rem; border-radius: 4px; font-size: .875rem; font-weight: 500; max-width: 100%; overflow-wrap: anywhere; }
+.draft-label { display: inline-block; background: var(--todo-bg); color: var(--todo-ink); font-size: .8125rem; font-weight: 650; padding: .05rem .55rem; border-radius: 999px; vertical-align: middle; font-variation-settings: 'wdth' 90; }
+.wrap { max-width: 72rem; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 3rem); }

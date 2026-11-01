@@ -1,0 +1,57 @@
+---
+// One project image, cropped and zoomed by display only:
+// object-fit: cover + object-position (focus) + scale (zoom) around the focus point.
+// The file is served exactly as stored. If the file is not in the repo yet,
+// the generated drawing is shown with a visible TODO naming the missing path.
+import ProjectGlyph from './ProjectGlyph.astro';
+import type { ResolvedImage } from '../lib/media';
+interface Props {
+  image: ResolvedImage | null;
+  slug: string;
+  /** thumb: small, decorative in a list (alt still set); large: project page */
+  size: 'thumb' | 'large';
+  class?: string;
+  /** show the credit line under a large image */
+  showCredit?: boolean;
+  /** show the missing-file TODO (large frames only; dev server only by default) */
+  showTodo?: boolean;
+}
+const { image, slug, size, class: cls, showCredit = true, showTodo = import.meta.env.DEV } = Astro.props;
+const style = image?.url ? `--focus: ${image.focus}; --zoom: ${image.zoom};` : undefined;
+// Wide technical drawings must not be cropped on the project page; photos fill the frame.
+const fit = image?.fit ?? (size === 'large' && image && /\.svg$/i.test(image.src) ? 'contain' : 'cover');
+---
+<figure class:list={['media', `media-${size}`, image?.url && `fit-${fit}`, cls]}>
+  <div class="frame" style={style}>
+    {image?.url
+      ? <img src={image.url} alt={image.alt} loading={size === 'thumb' ? 'lazy' : 'eager'} decoding="async" />
+      : <ProjectGlyph slug={slug} />}
+  </div>
+  {size === 'large' && (
+    <figcaption>
+      {image?.url && showCredit && (image.caption || image.credit) && (
+        <span class="credit">{image.caption}{image.caption && image.credit && ' '}{image.credit}</span>
+      )}
+      {image && !image.url && showTodo && <span class="todo">TODO: add the file {image.path} (listed in projects.yaml, not in the repo yet)</span>}
+      {!image && showTodo && <span class="todo">TODO: project photo or video (media is empty)</span>}
+    </figcaption>
+  )}
+</figure>
+<style>
+  .media { margin: 0; min-width: 0; }
+  .frame { position: relative; overflow: hidden; width: 100%; height: 100%; color: var(--blue); background: var(--surface); }
+  .media-large .frame { aspect-ratio: 3 / 2; border-radius: 10px; }
+  .frame img {
+    width: 100%; height: 100%; display: block;
+    object-fit: cover; object-position: var(--focus, 50% 50%);
+    transform: scale(var(--zoom, 1)); transform-origin: var(--focus, 50% 50%);
+  }
+  /* contain: show the whole image. Large frames take the image's own aspect
+     ratio (no letterbox); thumbnails keep their frame and letterbox inside it. */
+  .fit-contain .frame img { object-fit: contain; }
+  .media-large.fit-contain .frame { aspect-ratio: auto; }
+  .media-large.fit-contain .frame img { height: auto; }
+  .frame :global(svg) { width: 100%; height: 100%; padding: 6%; }
+  figcaption { margin-top: .75rem; display: grid; gap: .5rem; justify-items: start; }
+  .credit { color: var(--muted); font-size: .9375rem; }
+</style>
