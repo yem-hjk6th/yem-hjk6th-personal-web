@@ -34,7 +34,7 @@ export function runScene(opts: RunOptions) {
   const { canvas } = opts;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const parts = opts.build();
   const introSeconds = opts.introSeconds ?? 4;
@@ -57,10 +57,19 @@ export function runScene(opts: RunOptions) {
     renderer.render(parts.scene, parts.camera);
   };
 
-  let raf = 0, visible = true, start = performance.now();
+  // Animate continuously only during the intro; afterwards draw a frame only
+  // when the scroll position changes the build (saves battery and main thread).
+  let raf = 0, visible = true, last = -1;
+  const start = performance.now();
   const loop = (now: number) => {
     raf = 0;
-    frame((now - start) / 1000);
+    const t = (now - start) / 1000;
+    const inIntro = t < introSeconds;
+    const key = Math.round(opts.scrollProgress() * 2000);
+    if (inIntro || key !== last) {
+      frame(Math.min(t, introSeconds));
+      last = inIntro ? -1 : key;
+    }
     if (visible && !reduced) raf = requestAnimationFrame(loop);
   };
   const io = new IntersectionObserver(([e]) => {
@@ -68,7 +77,7 @@ export function runScene(opts: RunOptions) {
     if (visible && !raf && !reduced) raf = requestAnimationFrame(loop);
   });
   io.observe(canvas);
-  const ro = new ResizeObserver(() => { resize(); if (reduced) frame(0); });
+  const ro = new ResizeObserver(() => { resize(); last = -1; if (reduced) frame(0); });
   ro.observe(canvas);
   canvas.dataset.ready = 'true';
   if (reduced) frame(0); else raf = requestAnimationFrame(loop);

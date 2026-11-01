@@ -7,6 +7,7 @@ import {
   profile, projects, publications, presentations, exhibitions, experience,
   audiences, audiencesFor, tagLabel, firstSentence, contactLinks,
 } from '../../lib/content';
+import { serifFonts } from '../../lib/fonts';
 import '@fontsource/eb-garamond/500.css';
 import '@fontsource/eb-garamond/600.css';
 import '@fontsource/crimson-text/400.css';
@@ -20,7 +21,7 @@ const types = [
 ];
 const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https://doi.org/${p.doi}` : null);
 ---
-<Base title="Robotics, computer vision and digital fabrication" bodyClass="page-v2">
+<Base title="Robotics, computer vision and digital fabrication" bodyClass="page-v2" fonts={serifFonts}>
   <div class="v2">
     <header class="nav">
       <div class="grid nav-inner">
@@ -41,7 +42,7 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
           </div>
           <div class="hero-stage" aria-hidden="true"><canvas id="hero-canvas"></canvas></div>
           <div class="paths">
-            {audiences.map((a, i) => (
+            {audiences.map((a) => (
               <article class="path">
                 <h2>For {a.label} roles</h2>
                 <p>{a.headline}</p>

@@ -7,6 +7,8 @@ import type { SceneParts } from './runner';
 
 type V2 = [number, number];
 
+const SAMPLES = 128; // points per column layer
+
 export interface BeadOptions {
   path: 'column' | 'hilbert';
   colorA: string;   // bead on straight runs
@@ -29,7 +31,7 @@ function hilbertPath(order: number, size: number): V2[] {
   const out: V2[] = [];
   for (let i = 0; i < pts.length - 1; i++) {
     const [ax, ay] = pts[i], [bx, by] = pts[i + 1];
-    for (let k = 0; k < 6; k++) out.push([ax + ((bx - ax) * k) / 6, ay + ((by - ay) * k) / 6]);
+    for (let k = 0; k < 3; k++) out.push([ax + ((bx - ax) * k) / 3, ay + ((by - ay) * k) / 3]);
   }
   out.push(pts[pts.length - 1]);
   return out;
@@ -57,7 +59,7 @@ export function buildBeads(o: BeadOptions): SceneParts {
 
   const isColumn = o.path === 'column';
   const layers = isColumn ? 34 : 6;
-  const radial = 8;
+  const radial = 6;
   const beadW = isColumn ? 0.05 : 0.026, beadH = isColumn ? 0.032 : 0.022;
   const layerGap = beadH * 1.75;
   const closed = isColumn;
@@ -69,7 +71,7 @@ export function buildBeads(o: BeadOptions): SceneParts {
   const segIndexEnd: number[] = []; // index count after each ring segment, for nozzle lookup
 
   for (let L = 0; L < layers; L++) {
-    const path = isColumn ? columnLayer(L, layers, 300) : hilbertPath(4, 2.2);
+    const path = isColumn ? columnLayer(L, layers, SAMPLES) : hilbertPath(4, 2.2);
     const n = path.length, y = L * layerGap;
     const base = pos.length / 3;
     for (let i = 0; i < n; i++) {
@@ -84,7 +86,7 @@ export function buildBeads(o: BeadOptions): SceneParts {
         const a1 = Math.atan2(cur[1] - prev[1], cur[0] - prev[0]), a2 = Math.atan2(next[1] - cur[1], next[0] - cur[0]);
         turn = Math.abs(Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1)));
       }
-      const swell = Math.min(1, turn * (isColumn ? 9 : 0.45));
+      const swell = Math.min(1, turn * (isColumn ? (9 * SAMPLES) / 300 : 0.45));
       const w = beadW * (1 + 0.6 * swell);
       const side = new THREE.Vector3().crossVectors(t, Y).normalize();
       const c = new THREE.Vector3(cur[0], y, cur[1]);
@@ -145,7 +147,7 @@ export function buildBeads(o: BeadOptions): SceneParts {
   {
     let ci = 0;
     for (let L = 0; L < layers; L++) {
-      const n = isColumn ? 300 : centers.length / layers;
+      const n = isColumn ? SAMPLES : centers.length / layers;
       const segs = closed ? n : n - 1;
       for (let i = 0; i < segs; i++) segToCenter.push(ci + i + 1 < ci + n ? ci + i + 1 : ci);
       ci += n;
