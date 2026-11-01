@@ -97,10 +97,9 @@ chooser were removed (their code is in the git history of PR #1).
 
 Dark theme only, with a blue + gold accent pair:
 
-- One background token, `--bg`, with two candidates (`#000000` and `#4D4D4D`).
-  Every text colour was chosen to pass WCAG AA on both, so either can be kept
-  without re-checking contrast. Rules and raised surfaces are mixed from `--bg`
-  (`color-mix`), so they follow it.
+- One background token, `--bg`. Ye compared `#000000` and `#4D4D4D` and chose
+  pure black in round 3. Every text colour passes WCAG AA on both. Rules and
+  raised surfaces are mixed from `--bg` (`color-mix`), so they follow it.
 - Blue `#A3C8FF` for links and controls at rest; gold `#F2C14E` for hover,
   focus and pressed states. The two have almost the same lightness, so each
   state also changes form (thicker underline, outline, filled button), never
@@ -108,3 +107,14 @@ Dark theme only, with a blue + gold accent pair:
 - Hilbert hero: light grey bead, gold where the bead swells at corners, blue
   nozzle. SpotlightCard uses its dark palette with a blue light; its surface is
   transparent so rows sit on either background.
+
+## Round 3: pixel story and floating window
+
+- The three.js hero next to the name became a pixel-art story
+  (`src/scenes/pixel-story.ts`): four sensors watching a print, a step-out to
+  the lab monitor's live reconstruction, then a robot printing a ship hull.
+  Black, greys, blue for sensing and data, gold for printed material. The
+  canvas background is transparent so the hero's layer-line texture shows
+  through, and it is pinned top right so it clears the name.
+- The name opens a floating window (native `<dialog>`), so Ye can judge how a
+  pop-up sits in the UI. The Hilbert-panel scene moved into it as a placeholder.

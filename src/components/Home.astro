@@ -32,11 +32,16 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
 
   <main id="main">
     <section class="hero" id="top" aria-labelledby="name">
-      <div class="stage" aria-hidden="true">
-        <canvas id="hero-canvas"></canvas>
+      <div class="stage">
+        <canvas id="hero-canvas" width="320" height="180" role="img"
+          aria-label="Pixel animation in three scenes: a robot prints while four sensors (robot telemetry, a stereo camera, a bead camera and a nozzle borescope) send data; the view steps out to a lab monitor that builds a live 3D reconstruction of the print; then a large robot arm prints a ship hull."></canvas>
       </div>
       <div class="hero-text">
-        <h1 id="name" class="name"><ProximityName client:load label={profile.name} /></h1>
+        <h1 id="name" class="name">
+          <button type="button" class="name-btn" aria-haspopup="dialog" aria-controls="float-win">
+            <ProximityName client:load label={profile.name} />
+          </button>
+        </h1>
         <p class="affil">{profile.affiliation}, {profile.location}</p>
       </div>
       <div class="entries">
@@ -148,18 +153,30 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
       </ul>
     </section>
   </main>
+
+  <dialog id="float-win" class="win" aria-labelledby="win-title">
+    <div class="win-bar" data-drag>
+      <h2 id="win-title" class="win-title">Window preview</h2>
+      <button type="button" class="win-close" data-close autofocus>
+        <span aria-hidden="true">×</span><span class="sr-only">Close window</span>
+      </button>
+    </div>
+    <div class="win-body">
+      <canvas class="win-canvas" role="img" aria-label="Placeholder animation: a Hilbert-curve toolpath printed bead by bead"></canvas>
+      <p class="win-note">Placeholder animation. What this window shows is still to be decided.</p>
+    </div>
+  </dialog>
 </div>
 
 <script>
   import { initMotion } from '../scripts/motion';
   import { initFilter } from '../scripts/filter';
   import { mountHero } from '../scripts/hero';
+  import { initFloatingWindow } from '../scripts/floating-window';
   initMotion();
   initFilter();
-  // Scene colours: light grey bead, gold where it swells at corners, blue nozzle.
-  mountHero(document.querySelector('#hero-canvas'), 'hilbert',
-    { a: '#B9BFC8', b: '#F2C14E', c: '#A3C8FF' },
-    { trigger: document.querySelector('.hero'), start: 'top top', end: 'bottom top' });
+  mountHero(document.querySelector<HTMLCanvasElement>('#hero-canvas'));
+  initFloatingWindow(document.querySelector('.name-btn'), document.querySelector<HTMLDialogElement>('#float-win'));
 </script>
 
 <style>
@@ -182,15 +199,34 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   /* Hero */
   .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: 1fr auto auto; padding: 5rem var(--pad) 0;
     background: repeating-linear-gradient(to bottom, transparent 0 7px, color-mix(in srgb, var(--bg), #FFFFFF 5%) 7px 8px); }
-  /* The CSS behind the canvas is the fallback when WebGL is unavailable. */
-  .stage { position: absolute; top: 3.5rem; right: 0; width: 60%; height: max(18rem, calc(100svh - 20rem)); pointer-events: none;
-    background: repeating-linear-gradient(to bottom, transparent 0 10px, color-mix(in srgb, var(--blue) 18%, transparent) 10px 14px) center / 60% 70% no-repeat; }
-  .stage:has(canvas[data-ready]) { background: none; }
-  .stage canvas { width: 100%; height: 100%; }
+  /* Pixel story: 320 x 180 canvas scaled up with hard pixel edges, letterboxed at 16:9. */
+  /* Pinned to the top right so the canvas clears the name below it. */
+  .stage { position: absolute; top: 4rem; right: var(--pad); width: 52%; height: max(16rem, calc(100svh - 23rem)); pointer-events: none; }
+  .stage canvas { width: 100%; height: 100%; object-fit: contain; object-position: right top; image-rendering: pixelated; image-rendering: crisp-edges; }
   .hero-text { position: relative; align-self: end; padding-bottom: 2rem; }
   .name { font-size: clamp(3.6rem, 13vw, 11.5rem); line-height: .86; font-weight: 820; letter-spacing: -.02em;
     font-variation-settings: 'wdth' 125; margin-left: -.04em; }
   .name :global(.variable-proximity) { font-family: inherit; }
+  /* The name is a button that opens the floating window; it looks like the heading. */
+  .name-btn { all: unset; cursor: pointer; display: inline-block; color: var(--ink); border-radius: 6px; }
+  .name-btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 6px; }
+
+  /* Floating window: blue/grey chrome, black body. */
+  .win { padding: 0; border: 1px solid var(--blue); border-radius: 8px; background: var(--bg); color: var(--ink);
+    width: min(28rem, calc(100vw - 2rem)); max-height: calc(100svh - 2rem); overflow: hidden;
+    box-shadow: 0 0 0 1px #000, 0 24px 60px rgba(0,0,0,.6); }
+  .win[data-moved] { margin: 0; right: auto; bottom: auto; }
+  .win::backdrop { background: rgba(0, 0, 0, .55); }
+  .win-bar { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .35rem .35rem .35rem .9rem;
+    background: #1E1E1E; border-bottom: 1px solid #3C3C3C; user-select: none; touch-action: none; }
+  @media (min-width: 48rem) and (pointer: fine) { .win-bar { cursor: grab; } .win-bar:active { cursor: grabbing; } }
+  .win-title { font-size: .9375rem; font-weight: 650; color: var(--blue); font-variation-settings: 'wdth' 100; margin: 0; }
+  .win-close { font: inherit; font-size: 1.4rem; line-height: 1; width: 44px; height: 36px; border-radius: 6px; cursor: pointer;
+    background: transparent; color: var(--ink); border: 1px solid #3C3C3C; }
+  .win-close:hover { border-color: var(--gold); color: var(--gold); }
+  .win-body { padding: 1rem; display: grid; gap: .75rem; }
+  .win-canvas { width: 100%; aspect-ratio: 16 / 10; display: block; }
+  .win-note { margin: 0; color: var(--muted); font-size: .9375rem; }
   .affil { margin: 1rem 0 0; font-size: clamp(1rem, 1.6vw, 1.25rem); color: var(--muted); font-variation-settings: 'wdth' 92; }
 
   .entries { position: relative; display: grid; grid-template-columns: 1fr; border-top: 3px solid var(--ink); }
@@ -266,8 +302,8 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   @media (max-width: 30rem) { .contact-list li { grid-template-columns: 1fr; gap: .1rem; } }
 
   @media (max-width: 47.99rem) {
-    .stage { top: 3.5rem; left: 0; width: 100%; height: 40svh; }
+    .stage { top: 3.5rem; left: 0; right: 0; width: 100%; height: 56.25vw; }
     .hero { padding-top: 3.5rem; grid-template-rows: auto auto; min-height: 0; }
-    .hero-text { padding: calc(40svh + .5rem) 0 1.5rem; }
+    .hero-text { padding: calc(56.25vw + 1.25rem) 0 1.5rem; }
   }
 </style>

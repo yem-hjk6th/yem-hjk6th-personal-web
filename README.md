@@ -5,7 +5,7 @@ Personal website of Ye Ma, built with Astro and published with GitHub Pages at
 
 | Path | What it is |
 | --- | --- |
-| `/` | Homepage: name, the two audience headlines, a three.js hero (a Hilbert-curve toolpath printed bead by bead), projects filterable by audience, about, publications, contact |
+| `/` | Homepage: name (click it to open a floating window), the two audience headlines, a pixel-art story animation, projects filterable by audience, about, publications, contact |
 | `/projects/<slug>/` | One page per entry in `content/projects.yaml` |
 
 The homepage was chosen from three drafts (see [`docs/design-notes.md`](docs/design-notes.md)).
@@ -78,16 +78,42 @@ drawing plus a TODO naming the missing path.
 
 ## Theme
 
-Dark only. All colours are tokens at the top of `src/styles/theme.css`. The page
-background is the single token `--bg`; the candidates are `#000000` (current)
-and `#4D4D4D`. Text and accent colours pass WCAG AA on both:
+Dark only, on pure black. All colours are tokens at the top of
+`src/styles/theme.css`; the page background is the single token `--bg`
+(`#000000`), so it can be changed in one place. Text and accent colours pass
+WCAG AA:
 
-| Token | Hex | On #000000 | On #4D4D4D | Use |
-| --- | --- | --- | --- | --- |
-| `--ink` | `#F2F2F2` | 18.76:1 | 7.55:1 | body text |
-| `--muted` | `#C8C8C8` | 12.55:1 | 5.05:1 | secondary text |
-| `--blue` | `#A3C8FF` | 12.26:1 | 4.94:1 | links and controls at rest |
-| `--gold` | `#F2C14E` | 12.51:1 | 5.04:1 | hover, focus, pressed |
+| Token | Hex | On #000000 | Use |
+| --- | --- | --- | --- |
+| `--ink` | `#F2F2F2` | 18.76:1 | body text |
+| `--muted` | `#C8C8C8` | 12.55:1 | secondary text |
+| `--blue` | `#A3C8FF` | 12.26:1 | links and controls at rest |
+| `--gold` | `#F2C14E` | 12.51:1 | hover, focus, pressed |
+
+## Hero animation
+
+`src/scenes/pixel-story.ts` draws a three-scene pixel-art story on one
+320 x 180 canvas, scaled up with `image-rendering: pixelated`. Everything is
+drawn in code (rectangles, lines and a 3 x 5 pixel font); there are no image
+assets. Scene lengths live in the `TIMING` object at the top of that file.
+
+1. Four sensors watch a print: robot telemetry, stereo camera, bead camera,
+   nozzle borescope.
+2. The view steps out to a lab monitor that builds a live reconstruction, with
+   gold marks where the print deviates.
+3. Cut to the goal: a large robot arm printing a ship hull.
+
+It runs at most 30 fps and pauses when off screen.
+
+## Floating window
+
+Clicking the name (or Enter / Space on it) opens a small desktop-style window
+(`src/scripts/floating-window.ts`). It uses a native `<dialog>`: focus moves into
+it, Esc and the close button close it, focus returns to the name, and the page
+does not scroll while it is open. On wide screens with a mouse it can be
+dragged by its title bar; on phones it stays centred. Its content is a
+placeholder loop (the earlier Hilbert-panel three.js scene, loaded only when the
+window first opens) until the real content is decided.
 
 ## Develop
 
@@ -116,11 +142,11 @@ deploys `main` to GitHub Pages with `actions/upload-pages-artifact` and
 ## Motion and accessibility
 
 - `prefers-reduced-motion: reduce` turns off Lenis smooth scrolling, GSAP
-  scroll effects and the React Bits animations, and the hero scenes render one
-  still, finished frame.
-- The hero scene loads after the page has painted, pauses when off-screen, and
-  after its short intro only redraws when scrolling changes it. Without WebGL a
-  CSS placeholder stays in place.
+  scroll effects and the React Bits animations. The hero shows one still frame
+  of scene 3, and the floating window's placeholder renders one still frame.
+- The hero animation starts after the page has painted and pauses when
+  off-screen. The floating window's three.js placeholder loads only when the
+  window opens and stops when it closes.
 - Layouts are checked from 390 px to 1440 px wide.
 
 ## Privacy

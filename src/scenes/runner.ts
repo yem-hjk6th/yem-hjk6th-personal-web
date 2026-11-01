@@ -13,8 +13,10 @@ export interface SceneParts {
 export interface RunOptions {
   canvas: HTMLCanvasElement;
   build(): SceneParts;
-  /** Reads current scroll-driven progress (0..1). */
-  scrollProgress(): number;
+  /** Reads current scroll-driven progress (0..1). Unused when loopSeconds is set. */
+  scrollProgress?(): number;
+  /** Loop the build forever over this many seconds instead of intro + scroll. */
+  loopSeconds?: number;
   /** Seconds for the intro build-up that plays without scrolling. */
   introSeconds?: number;
   /** Fraction of the build the intro reaches before scroll takes over. */
@@ -52,7 +54,9 @@ export function runScene(opts: RunOptions) {
   const frame = (t: number) => {
     const intro = Math.min(1, t / introSeconds);
     const eased = 1 - Math.pow(1 - intro, 3);
-    const p = reduced ? 1 : Math.max(eased * introReach, opts.scrollProgress());
+    const p = reduced ? 1
+      : opts.loopSeconds ? (t % opts.loopSeconds) / opts.loopSeconds
+      : Math.max(eased * introReach, opts.scrollProgress?.() ?? 0);
     parts.update(Math.min(1, p), reduced ? 0 : t);
     renderer.render(parts.scene, parts.camera);
   };
@@ -64,11 +68,15 @@ export function runScene(opts: RunOptions) {
   const loop = (now: number) => {
     raf = 0;
     const t = (now - start) / 1000;
-    const inIntro = t < introSeconds;
-    const key = Math.round(opts.scrollProgress() * 2000);
-    if (inIntro || key !== last) {
-      frame(Math.min(t, introSeconds));
-      last = inIntro ? -1 : key;
+    if (opts.loopSeconds) {
+      frame(t);
+    } else {
+      const inIntro = t < introSeconds;
+      const key = Math.round((opts.scrollProgress?.() ?? 0) * 2000);
+      if (inIntro || key !== last) {
+        frame(Math.min(t, introSeconds));
+        last = inIntro ? -1 : key;
+      }
     }
     if (visible && !reduced) raf = requestAnimationFrame(loop);
   };

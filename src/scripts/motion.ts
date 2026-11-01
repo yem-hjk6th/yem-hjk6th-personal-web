@@ -31,13 +31,13 @@ export function initMotion() {
   return { gsap, ScrollTrigger, lenis };
 }
 
-/** A scroll-progress reader (0..1) for an element scrolling from `start` to `end`. */
-export function scrollProgress(trigger: Element, start = 'top top', end = 'bottom top') {
-  const st = ScrollTrigger.create({ trigger, start, end });
-  return () => st.progress;
-}
-
 export function scrollToEl(el: HTMLElement) {
   if (lenis) lenis.scrollTo(el, { offset: -16 });
   else el.scrollIntoView({ behavior: prefersReduced() ? 'auto' : 'smooth' });
+}
+
+/** Stop or resume smooth scrolling (used while a modal window is open). */
+export function setScrollLocked(locked: boolean) {
+  document.documentElement.classList.toggle('scroll-locked', locked);
+  if (lenis) locked ? lenis.stop() : lenis.start();
 }

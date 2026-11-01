@@ -1,9 +1,9 @@
 /* Site theme: dark only.
  *
- * The page background is one token, --bg. Ye is choosing between
- * #000000 and #4D4D4D; every other colour below passes WCAG AA (4.5:1)
- * for text on both, and the derived tones are mixed from --bg so they
- * follow it automatically.
+ * The page background is pure black, #000000 (Ye's choice). It stays a
+ * single token, --bg, so it can change later: the derived tones are mixed
+ * from --bg, and the text colours below were also checked on a lighter
+ * candidate (#4D4D4D), where they still pass WCAG AA (4.5:1).
  *
  *   token     hex       on #000000   on #4D4D4D
  *   --ink     #F2F2F2   18.76:1      7.55:1     body text
