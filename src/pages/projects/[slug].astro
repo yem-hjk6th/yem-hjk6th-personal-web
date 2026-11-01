@@ -38,13 +38,14 @@ const video = resolveVideo(p.media.video, p.slug);
             <video controls preload="none" playsinline poster={video.posterUrl ?? undefined} src={video.url}></video>
             {(video.caption || video.credit) && <figcaption>{video.caption} {video.credit}</figcaption>}
           </figure>
-        ) : <p><span class="todo">TODO: add the file {video.path} (listed in projects.yaml, not in the repo yet)</span></p>
+        ) : import.meta.env.DEV && <p><span class="todo">TODO: add the file {video.path} (listed in projects.yaml, not in the repo yet)</span></p>
       )}
     </div>
 
     <div class="body">
       <div class="sections">
-        {sections.map((s) => (
+        {/* TODO labels show on the dev server only; the public build skips empty sections. */}
+        {sections.filter((s) => s.body || import.meta.env.DEV).map((s) => (
           <section>
             <h2>{s.h}</h2>
             {s.body ? <p>{s.body}</p> : <p><span class="todo">TODO: {s.h.toLowerCase()} not yet written in projects.yaml</span></p>}

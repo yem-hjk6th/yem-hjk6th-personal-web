@@ -92,10 +92,13 @@ WCAG AA:
 
 ## Hero animation
 
-`src/scenes/pixel-story.ts` draws a three-scene pixel-art story on one
-320 x 180 canvas, scaled up with `image-rendering: pixelated`. Everything is
-drawn in code (rectangles, lines and a 3 x 5 pixel font); there are no image
-assets. Scene lengths live in the `TIMING` object at the top of that file.
+`public/media/hero/rsi_pixel_story.mp4` is a 12 s silent loop of 320 x 180
+pixel art rendered at 1280 x 720 (H.264, about 165 KB), made with
+[animate](https://github.com/cth9191/animate) (MIT) from a storyboard. Its
+source is kept outside this repo; to change a scene, re-render and replace the
+file. `rsi_pixel_story_still.png` (a frame of scene 3) is the poster.
+`src/scenes/pixel-story.ts` is the earlier code-drawn canvas version, kept for
+reference and no longer imported.
 
 1. Four sensors watch a print: robot telemetry, stereo camera, bead camera,
    nozzle borescope.
@@ -103,7 +106,7 @@ assets. Scene lengths live in the `TIMING` object at the top of that file.
    gold marks where the print deviates.
 3. Cut to the goal: a large robot arm printing a ship hull.
 
-It runs at most 30 fps and pauses when off screen.
+It plays only while on screen.
 
 ## Floating window
 
@@ -144,8 +147,7 @@ deploys `main` to GitHub Pages with `actions/upload-pages-artifact` and
 - `prefers-reduced-motion: reduce` turns off Lenis smooth scrolling, GSAP
   scroll effects and the React Bits animations. The hero shows one still frame
   of scene 3, and the floating window's placeholder renders one still frame.
-- The hero animation starts after the page has painted and pauses when
-  off-screen. The floating window's three.js placeholder loads only when the
+- The hero video plays only while on screen. The floating window's three.js placeholder loads only when the
   window opens and stops when it closes.
 - Layouts are checked from 390 px to 1440 px wide.
 
@@ -166,6 +168,7 @@ contact form; contact is the links in `content/profile.yaml`.
 | js-yaml | MIT | Build time only |
 | [GSAP](https://gsap.com) + ScrollTrigger | GSAP Standard "No Charge" License (not MIT, not open source) | See below |
 | [React Bits](https://github.com/DavidHDev/react-bits) components | MIT + Commons Clause | See below |
+| [animate](https://github.com/cth9191/animate) | MIT | Used offline to render the hero video; no code from it ships with the site |
 | Archivo | SIL Open Font License 1.1 | © 2020 The Archivo Project Authors, via `@fontsource-variable/archivo` |
 | Living Column photo (`public/media/living-column/`) | Not an open licence; used on this site with Ye's approval | Credited on the page as "Photo: CT .lab, University of Virginia, 2025". Do not reuse it elsewhere without asking the lab |
 

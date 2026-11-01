@@ -33,8 +33,9 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   <main id="main">
     <section class="hero" id="top" aria-labelledby="name">
       <div class="stage">
-        <canvas id="hero-canvas" width="320" height="180" role="img"
-          aria-label="Pixel animation in three scenes: a robot prints while four sensors (robot telemetry, a stereo camera, a bead camera and a nozzle borescope) send data; the view steps out to a lab monitor that builds a live 3D reconstruction of the print; then a large robot arm prints a ship hull."></canvas>
+        <video id="hero-video" src="/media/hero/rsi_pixel_story.mp4" poster="/media/hero/rsi_pixel_story_still.png"
+          width="1280" height="720" muted loop playsinline preload="auto"
+          aria-label="Pixel animation in three scenes: a robot prints while four sensors (robot telemetry, a stereo camera, a bead camera and a nozzle borescope) send data; the view steps out to a lab monitor that builds a live 3D reconstruction of the print; then a large robot arm prints a ship hull."></video>
       </div>
       <div class="hero-text">
         <h1 id="name" class="name">
@@ -175,7 +176,7 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   import { initFloatingWindow } from '../scripts/floating-window';
   initMotion();
   initFilter();
-  mountHero(document.querySelector<HTMLCanvasElement>('#hero-canvas'));
+  mountHero(document.querySelector<HTMLVideoElement>('#hero-video'));
   initFloatingWindow(document.querySelector('.name-btn'), document.querySelector<HTMLDialogElement>('#float-win'));
 </script>
 
@@ -199,10 +200,11 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   /* Hero */
   .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: 1fr auto auto; padding: 5rem var(--pad) 0;
     background: repeating-linear-gradient(to bottom, transparent 0 7px, color-mix(in srgb, var(--bg), #FFFFFF 5%) 7px 8px); }
-  /* Pixel story: 320 x 180 canvas scaled up with hard pixel edges, letterboxed at 16:9. */
-  /* Pinned to the top right so the canvas clears the name below it. */
-  .stage { position: absolute; top: 4rem; right: var(--pad); width: 52%; height: max(16rem, calc(100svh - 23rem)); pointer-events: none; }
-  .stage canvas { width: 100%; height: 100%; object-fit: contain; object-position: right top; image-rendering: pixelated; image-rendering: crisp-edges; }
+  /* Pixel story: a 1280 x 720 video of 320 x 180 pixel art, letterboxed at 16:9.
+     lighten lets its black background show the hero's layer-line texture. */
+  /* Pinned to the top right and kept short enough that scene 2's full-frame room clears the name below it. */
+  .stage { position: absolute; top: 4rem; right: var(--pad); width: 52%; height: max(14rem, calc(100svh - 34rem)); pointer-events: none; }
+  .stage video { width: 100%; height: 100%; object-fit: contain; object-position: right top; image-rendering: pixelated; image-rendering: crisp-edges; mix-blend-mode: lighten; }
   .hero-text { position: relative; align-self: end; padding-bottom: 2rem; }
   .name { font-size: clamp(3.6rem, 13vw, 11.5rem); line-height: .86; font-weight: 820; letter-spacing: -.02em;
     font-variation-settings: 'wdth' 125; margin-left: -.04em; }

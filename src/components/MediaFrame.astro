@@ -13,10 +13,10 @@ interface Props {
   class?: string;
   /** show the credit line under a large image */
   showCredit?: boolean;
-  /** show the missing-file TODO (large frames only) */
+  /** show the missing-file TODO (large frames only; dev server only by default) */
   showTodo?: boolean;
 }
-const { image, slug, size, class: cls, showCredit = true, showTodo = true } = Astro.props;
+const { image, slug, size, class: cls, showCredit = true, showTodo = import.meta.env.DEV } = Astro.props;
 const style = image?.url ? `--focus: ${image.focus}; --zoom: ${image.zoom};` : undefined;
 // Wide technical drawings must not be cropped on the project page; photos fill the frame.
 const fit = image?.fit ?? (size === 'large' && image && /\.svg$/i.test(image.src) ? 'contain' : 'cover');

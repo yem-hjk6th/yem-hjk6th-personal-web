@@ -1,9 +1,10 @@
-// Hero: the pixel-art story next to the name. Runs after first paint.
-import { mountPixelStory } from '../scenes/pixel-story';
-
-export function mountHero(canvas: HTMLCanvasElement | null) {
-  if (!canvas) return;
-  const go = () => mountPixelStory(canvas);
-  const idle = (window as any).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 200));
-  if (document.readyState === 'complete') idle(go); else window.addEventListener('load', () => idle(go), { once: true });
+// Hero: the pixel-art story next to the name, a 12 s silent loop (public/media/hero/).
+// Plays only while on screen; with prefers-reduced-motion it keeps the poster, a still of scene 3.
+export function mountHero(video: HTMLVideoElement | null) {
+  if (!video) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) video.play().catch(() => {}); else video.pause();
+  });
+  io.observe(video);
 }

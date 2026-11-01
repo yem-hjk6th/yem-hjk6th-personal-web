@@ -116,5 +116,8 @@ Dark theme only, with a blue + gold accent pair:
   Black, greys, blue for sensing and data, gold for printed material. The
   canvas background is transparent so the hero's layer-line texture shows
   through, and it is pinned top right so it clears the name.
+- Ye later chose the version rendered with animate (more detail: material in
+  the nozzle, a progress bar, a person for scale). It ships as a 12 s mp4 in
+  `public/media/hero/`; the canvas code is no longer imported.
 - The name opens a floating window (native `<dialog>`), so Ye can judge how a
   pop-up sits in the UI. The Hilbert-panel scene moved into it as a placeholder.
