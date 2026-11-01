@@ -1,40 +1,41 @@
-- type: conference paper
-  authors: "Datta, I., Ma, Y., & Baharlou, E."
-  year: 2025
-  title: "Toolpath-informed biofabrication: Architecturing mycelium-mineral composite panels"
-  venue: "Computing for Resilience: Proc. 45th ACADIA, Vol. 2, pp. 170-180, Miami, FL"
-  doi: "10.52842/conf.acadia.2025.2.170"
-  url: "https://doi.org/10.52842/conf.acadia.2025.2.170"
-- type: conference paper
-  authors: "Ma, Y., & Baharlou, E."
-  year: 2025
-  title: "A data-driven approach for monitoring and prediction of hygroscopic deformation in natural wood"
-  venue: "Proc. ARCC 2025 International Conference: Emerging Challenges, pp. 219-226"
-  doi: null
-- type: journal paper
-  authors: "Ma, Y."
-  year: 2023
-  title: "On the experiment and design of the Tachi-Miura polyhedron's radial load-bearing capacity"
-  venue: "Journal of Physics: Conference Series, 2469, 012014"
-  doi: "10.1088/1742-6596/2469/1/012014"
-  url: "https://doi.org/10.1088/1742-6596/2469/1/012014"
-- type: conference paper
-  authors: "Ma, Y."
-  year: 2022
-  title: "Brian [sic]-computer interface-based emotion features recognition using convolutional neural networks"
-  venue: "Proc. 4th International Conference on Frontiers Technology of Information and Computer (ICFTIC), IEEE, pp. 555-558"
-  doi: "10.1109/ICFTIC57696.2022.10075249"
-  url: "https://doi.org/10.1109/ICFTIC57696.2022.10075249"
-- type: patent
-  authors: "Tian, J., Ma, Y., & Chen, J."
-  year: 2022
-  title: "Manual and automatic casement push-out window"
-  venue: "Chinese invention patent CN112627665B"
-- type: patent
-  authors: "Tian, J., & Ma, Y."
-  year: 2021
-  title: "Synchronous control system for coded window openers"
-  venue: "Chinese invention patent CN111236790B"
+publications:
+  - type: conference paper
+    authors: "Datta, I., Ma, Y., & Baharlou, E."
+    year: 2025
+    title: "Toolpath-informed biofabrication: Architecturing mycelium-mineral composite panels"
+    venue: "Computing for Resilience: Proc. 45th ACADIA, Vol. 2, pp. 170-180, Miami, FL"
+    doi: "10.52842/conf.acadia.2025.2.170"
+    url: "https://doi.org/10.52842/conf.acadia.2025.2.170"
+  - type: conference paper
+    authors: "Ma, Y., & Baharlou, E."
+    year: 2025
+    title: "A data-driven approach for monitoring and prediction of hygroscopic deformation in natural wood"
+    venue: "Proc. ARCC 2025 International Conference: Emerging Challenges, pp. 219-226"
+    doi: null
+  - type: journal paper
+    authors: "Ma, Y."
+    year: 2023
+    title: "On the experiment and design of the Tachi-Miura polyhedron's radial load-bearing capacity"
+    venue: "Journal of Physics: Conference Series, 2469, 012014"
+    doi: "10.1088/1742-6596/2469/1/012014"
+    url: "https://doi.org/10.1088/1742-6596/2469/1/012014"
+  - type: conference paper
+    authors: "Ma, Y."
+    year: 2022
+    title: "Brian [sic]-computer interface-based emotion features recognition using convolutional neural networks"
+    venue: "Proc. 4th International Conference on Frontiers Technology of Information and Computer (ICFTIC), IEEE, pp. 555-558"
+    doi: "10.1109/ICFTIC57696.2022.10075249"
+    url: "https://doi.org/10.1109/ICFTIC57696.2022.10075249"
+  - type: patent
+    authors: "Tian, J., Ma, Y., & Chen, J."
+    year: 2022
+    title: "Manual and automatic casement push-out window"
+    venue: "Chinese invention patent CN112627665B"
+  - type: patent
+    authors: "Tian, J., & Ma, Y."
+    year: 2021
+    title: "Synchronous control system for coded window openers"
+    venue: "Chinese invention patent CN111236790B"
 presentations:
   - title: "Toolpath-informed biofabrication: Architecturing mycelium-mineral composite panels"
     venue: "ACADIA 2025, Miami, FL"
