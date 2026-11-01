@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import Home from '../../components/v1/Home.astro';
+import '@fontsource-variable/archivo/wdth.css';
+---
+<Base title="Robotics, computer vision and digital fabrication" bodyClass="page-v3">
+  <Home variant="v3" />
+</Base>
+<style is:global>
+  .page-v3 { background: #E7E8E3; }
+  /* React Bits overrides so the components sit inside variant 1's layout. */
+  .page-v3 .v3-spot { padding: 0; border-radius: 10px; background-color: transparent !important; box-shadow: none !important; }
+  .page-v3 .v3-spot .spotlight-card__border { background: transparent; }
+  .page-v3 .bio-reveal { margin: 0; }
+  .page-v3 .bio-reveal-text { font-size: clamp(1.2rem, 2vw, 1.5rem); line-height: 1.45; font-weight: 400; max-width: 36ch; font-variation-settings: 'wdth' 96; }
+  .page-v3 .magnet-wrap { display: inline-block; }
+  .page-v3 .name .variable-proximity { font-family: inherit; }
+</style>

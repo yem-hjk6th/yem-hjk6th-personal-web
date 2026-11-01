@@ -1,0 +1,259 @@
+---
+// Variant 2: design system from the ui-ux-pro-max skill
+// (Portfolio Grid pattern, Swiss Modernism 2.0, navy + ochre, EB Garamond / Crimson Text).
+import Base from '../../layouts/Base.astro';
+import ProjectGlyph from '../../components/ProjectGlyph.astro';
+import {
+  profile, projects, publications, presentations, exhibitions, experience,
+  audiences, audiencesFor, tagLabel, firstSentence, contactLinks,
+} from '../../lib/content';
+import '@fontsource/eb-garamond/500.css';
+import '@fontsource/eb-garamond/600.css';
+import '@fontsource/crimson-text/400.css';
+import '@fontsource/crimson-text/400-italic.css';
+import '@fontsource/crimson-text/600.css';
+
+const types = [
+  { key: 'journal paper', label: 'Journal' },
+  { key: 'conference paper', label: 'Conference papers' },
+  { key: 'patent', label: 'Patents' },
+];
+const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https://doi.org/${p.doi}` : null);
+---
+<Base title="Robotics, computer vision and digital fabrication" bodyClass="page-v2">
+  <div class="v2">
+    <header class="nav">
+      <div class="grid nav-inner">
+        <a class="brand" href="#top">{profile.name}</a>
+        <nav aria-label="Sections">
+          <a href="#work">Work</a><a href="#about">About</a><a href="#publications">Publications</a><a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top" aria-labelledby="name">
+        <div class="grid">
+          <div class="hero-copy">
+            <p class="affil">{profile.affiliation}</p>
+            <h1 id="name">{profile.name}</h1>
+            <p class="loc">{profile.location}</p>
+          </div>
+          <div class="hero-stage" aria-hidden="true"><canvas id="hero-canvas"></canvas></div>
+          <div class="paths">
+            {audiences.map((a, i) => (
+              <article class="path">
+                <h2>For {a.label} roles</h2>
+                <p>{a.headline}</p>
+                <button type="button" data-audience={a.id} data-label={a.label} data-scroll="#work" aria-pressed="false">
+                  View {a.label} projects
+                </button>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="work" id="work" aria-labelledby="work-h">
+        <div class="grid">
+          <div class="sec-head">
+            <h2 id="work-h">Selected work</h2>
+            <div class="tabs" role="group" aria-label="Filter projects by audience">
+              <button type="button" data-audience="all" data-label="all" aria-pressed="true">All projects</button>
+              {audiences.map((a) => <button type="button" data-audience={a.id} data-label={a.label} aria-pressed="false">{a.label}</button>)}
+            </div>
+            <p class="status" data-filter-status aria-live="polite"></p>
+          </div>
+          <ul class="cards">
+            {projects.map((p) => (
+              <li class="card" data-audiences={audiencesFor(p).join(' ')}>
+                <a href={`/projects/${p.slug}/?from=v2`}>
+                  <span class="card-art"><ProjectGlyph slug={p.slug} /></span>
+                  <span class="card-body">
+                    <span class="card-years">{p.years}{p.status === 'draft' && <span class="draft">In progress</span>}</span>
+                    <span class="card-title">{p.title}</span>
+                    <span class="card-text">{firstSentence(p.problem)}</span>
+                    <span class="card-tags">{p.tags.map((t) => <span>{tagLabel[t] ?? t}</span>)}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section class="about" id="about" aria-labelledby="about-h">
+        <div class="grid">
+          <h2 id="about-h" class="col-h">About</h2>
+          <div class="about-bio"><p>{profile.bio}</p></div>
+          <div class="about-cv">
+            <h3>Education</h3>
+            <dl>
+              {profile.education.map((e) => (<><dt>{e.years}</dt><dd><strong>{e.degree}</strong><br />{e.school}{e.detail && <><br /><span class="muted">{e.detail}</span></>}</dd></>))}
+            </dl>
+            <h3>Experience</h3>
+            <dl>
+              {experience.map((e) => (<><dt>{e.years ?? <span class="todo">TODO: years</span>}</dt><dd><strong>{e.role}</strong><br />{e.org}{e.location && `, ${e.location}`}<br /><span class="muted">{e.summary}</span></dd></>))}
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section class="pubs" id="publications" aria-labelledby="pubs-h">
+        <div class="grid">
+          <h2 id="pubs-h" class="col-h">Publications</h2>
+          <div class="pub-groups">
+            {types.map((t) => (
+              <div class="pub-group">
+                <h3>{t.label}</h3>
+                <ol>
+                  {publications.filter((p) => p.type === t.key).map((p) => {
+                    const href = pubLink(p);
+                    return (
+                      <li>
+                        <span class="pub-authors">{p.authors} ({p.year}).</span>{' '}
+                        {href ? <a href={href} rel="noopener">{p.title}</a> : <span class="pub-t">{p.title}</span>}.{' '}
+                        <em>{p.venue}</em>.
+                      </li>
+                    );
+                  })}
+                </ol>
+              </div>
+            ))}
+            <div class="pub-group">
+              <h3>Presentations</h3>
+              <ol>{presentations.map((p) => <li>{p.title}. <em>{p.venue}</em>, {p.year}.</li>)}</ol>
+            </div>
+            <div class="pub-group">
+              <h3>Exhibitions</h3>
+              <ol>{exhibitions.map((p) => <li>{p.title}. <em>{p.venue}</em>, {p.year}.</li>)}</ol>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="contact" id="contact" aria-labelledby="contact-h">
+      <div class="grid">
+        <h2 id="contact-h" class="col-h">Contact</h2>
+        <ul class="contact-list">
+          {contactLinks.map((c) => <li><span>{c.label}</span><a href={c.href} rel="noopener">{c.text}</a></li>)}
+        </ul>
+        <p class="fine">Draft homepage 2 of 3. <a href="/">Compare drafts</a></p>
+      </div>
+    </footer>
+  </div>
+</Base>
+
+<script>
+  import { initMotion } from '../../scripts/motion';
+  import { initFilter } from '../../scripts/filter';
+  import { mountHero } from '../../scripts/hero';
+  initMotion();
+  initFilter();
+  // The lattice builds over the whole page scroll, not just the hero.
+  mountHero(document.querySelector('#hero-canvas'), 'lattice',
+    { a: '#1E3A5F', b: '#2563EB', c: '#A16207' },
+    { trigger: document.querySelector('main'), start: 'top top', end: 'bottom bottom' });
+</script>
+
+<style is:global>.page-v2 { background: #F8FAFC; }</style>
+<style>
+  .v2 {
+    --primary: #1E3A5F; --secondary: #2563EB; --accent: #A16207; --bg: #F8FAFC; --fg: #0F172A;
+    --card: #FFFFFF; --muted-bg: #E9EEF5; --muted: #475569; --border: #CBD5E1; --ring: #1E3A5F;
+    --gap: 1rem; --pad: clamp(1rem, 4vw, 3rem);
+    background: var(--bg); color: var(--fg);
+    font-family: 'Crimson Text', Georgia, serif; font-size: 1.1875rem; line-height: 1.6;
+  }
+  .v2 h1, .v2 h2, .v2 h3 { font-family: 'EB Garamond', Georgia, serif; font-weight: 600; margin: 0; color: var(--primary); }
+  .v2 a { color: var(--secondary); text-underline-offset: .15em; }
+  .v2 :focus-visible { outline: 3px solid var(--ring); outline-offset: 3px; border-radius: 2px; }
+  .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); max-width: 84rem; margin: 0 auto; padding: 0 var(--pad); }
+  :where(.grid > *) { grid-column: 1 / -1; }
+
+  .nav { position: sticky; top: 0; z-index: 10; background: rgba(248,250,252,.94); border-bottom: 1px solid var(--border); backdrop-filter: blur(6px); }
+  .nav-inner { align-items: center; min-height: 3.5rem; }
+  .brand { grid-column: 1 / 5; font-family: 'EB Garamond', serif; font-weight: 600; font-size: 1.25rem; color: var(--primary) !important; text-decoration: none; }
+  .nav nav { grid-column: 5 / -1; justify-self: end; display: flex; gap: clamp(.6rem, 2.5vw, 2rem); }
+  .nav nav a { color: var(--fg); text-decoration: none; padding: .7rem 0; }
+  .nav nav a:hover { color: var(--secondary); text-decoration: underline; }
+  @media (max-width: 40rem) { .brand { display: none; } .nav nav { grid-column: 1 / -1; justify-self: stretch; justify-content: space-between; } }
+
+  .hero { padding: clamp(2.5rem, 7vw, 5rem) 0 clamp(3rem, 6vw, 5rem); border-bottom: 1px solid var(--border); }
+  .hero-copy { align-self: center; }
+  .affil { margin: 0 0 1rem; color: var(--muted); font-size: 1.125rem; }
+  h1 { font-size: clamp(3.5rem, 10vw, 8.5rem) !important; line-height: .92; font-weight: 500 !important; letter-spacing: -.02em; }
+  .loc { margin: 1rem 0 0; color: var(--muted); }
+  .hero-stage { position: relative; height: clamp(18rem, 48vw, 34rem); background:
+      linear-gradient(var(--border) 1px, transparent 1px) 0 0 / 24px 24px, linear-gradient(90deg, var(--border) 1px, transparent 1px) 0 0 / 24px 24px; border: 1px solid var(--border); }
+  .hero-stage:has(canvas[data-ready]) { background: linear-gradient(180deg, var(--bg), var(--muted-bg)); }
+  .hero-stage canvas { width: 100%; height: 100%; }
+  .paths { display: grid; gap: var(--gap); margin-top: 2.5rem; }
+  @media (min-width: 56rem) {
+    .hero-copy { grid-column: 1 / 8; }
+    .hero-stage { grid-column: 8 / -1; grid-row: 1 / span 2; }
+    .paths { grid-column: 1 / 8; grid-template-columns: 1fr 1fr; }
+  }
+  .path { background: var(--card); border: 1px solid var(--border); border-top: 4px solid var(--primary); padding: 1.25rem 1.25rem 1.4rem; display: grid; gap: .6rem; align-content: start; }
+  .path + .path { border-top-color: var(--accent); }
+  .path h2 { font-size: 1.375rem; }
+  .path p { margin: 0; color: var(--fg); }
+  button { font: inherit; font-family: 'EB Garamond', serif; font-weight: 600; font-size: 1.0625rem; cursor: pointer; min-height: 44px; padding: .45rem 1rem; border: 1px solid var(--primary); background: var(--card); color: var(--primary); transition: background-color .2s, color .2s; justify-self: start; }
+  button:hover { background: var(--muted-bg); }
+  button[aria-pressed='true'] { background: var(--primary); color: #fff; }
+
+  .work, .about, .pubs { padding: clamp(3.5rem, 8vw, 6rem) 0; }
+  .about, .pubs { border-top: 1px solid var(--border); }
+  .sec-head { display: grid; gap: 1rem; margin-bottom: 2rem; }
+  .sec-head h2, .col-h { font-size: clamp(2rem, 4.5vw, 3.25rem); line-height: 1.05; }
+  .tabs { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .status { margin: 0; color: var(--muted); font-style: italic; }
+  .cards { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--gap); grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
+  .card a { display: grid; height: 100%; text-decoration: none; color: var(--fg); background: var(--card); border: 1px solid var(--border); transition: border-color .2s, box-shadow .2s; }
+  .card a:hover { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+  .card-art { display: block; aspect-ratio: 4 / 3; background: var(--muted-bg); color: var(--primary); border-bottom: 1px solid var(--border); padding: 1rem; }
+  .card-art :global(svg) { width: 100%; height: 100%; }
+  .card-body { display: grid; gap: .4rem; padding: 1.1rem 1.25rem 1.3rem; align-content: start; }
+  .card-years { color: var(--muted); font-size: 1rem; display: flex; gap: .6rem; align-items: center; }
+  .draft { font-family: 'EB Garamond', serif; font-weight: 600; font-size: .875rem; color: #713F12; background: #FEF3C7; border: 1px solid #D6B25E; padding: 0 .5rem; }
+  .card-title { font-family: 'EB Garamond', serif; font-weight: 600; font-size: 1.4rem; line-height: 1.2; color: var(--primary); }
+  .card a:hover .card-title { text-decoration: underline; }
+  .card-text { color: var(--muted); }
+  .card-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
+  .card-tags span { font-size: .9375rem; color: var(--primary); background: var(--muted-bg); padding: 0 .5rem; }
+
+  .about-bio p { margin: 0; font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.5; max-width: 34em; }
+  .about-cv h3, .pub-group h3 { font-size: 1.375rem; margin-bottom: .75rem; }
+  .about-cv h3:not(:first-child) { margin-top: 2rem; }
+  dl { margin: 0; display: grid; grid-template-columns: 7rem 1fr; gap: .9rem 1rem; }
+  dt { color: var(--muted); }
+  dd { margin: 0; }
+  .muted { color: var(--muted); }
+  .todo { font-size: .875rem; border: 1px dashed #713F12; background: #FEF3C7; color: #713F12; padding: 0 .35rem; }
+  @media (max-width: 30rem) { dl { grid-template-columns: 1fr; gap: .1rem; } dd { margin-bottom: .8rem; } }
+  @media (min-width: 56rem) {
+    .col-h { grid-column: 1 / 4; }
+    .about-bio { grid-column: 4 / 9; }
+    .about-cv { grid-column: 9 / -1; }
+    .pub-groups { grid-column: 4 / -1; }
+    .contact-list { grid-column: 4 / -1; }
+    .fine { grid-column: 4 / -1; }
+  }
+  .about-bio, .about-cv, .pub-groups { margin-top: 1.5rem; }
+  @media (min-width: 56rem) { .about-bio, .about-cv, .pub-groups, .contact-list { margin-top: 0; } }
+  .pub-group + .pub-group { margin-top: 2.25rem; }
+  .pub-group ol { margin: 0; padding-left: 1.4rem; display: grid; gap: .8rem; max-width: 46em; }
+  .pub-t { font-weight: 600; }
+
+  .contact { background: var(--primary); color: #fff; padding: clamp(3.5rem, 8vw, 6rem) 0 2.5rem; }
+  .contact .col-h { color: #fff; }
+  .contact :focus-visible { outline-color: #fff; }
+  .contact-list { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; gap: 0; }
+  .contact-list li { display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; align-items: baseline; padding: .8rem 0; border-bottom: 1px solid rgba(255,255,255,.25); }
+  .contact-list span { color: #CBD5E1; }
+  .contact-list a { color: #fff; font-family: 'EB Garamond', serif; font-size: clamp(1.25rem, 3vw, 1.9rem); overflow-wrap: anywhere; }
+  .fine { margin: 3rem 0 0; color: #CBD5E1; font-size: 1rem; }
+  .fine a { color: #fff; }
+  @media (max-width: 30rem) { .contact-list li { grid-template-columns: 1fr; gap: 0; } }
+</style>

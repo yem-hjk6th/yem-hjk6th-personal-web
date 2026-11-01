@@ -56,9 +56,9 @@ export function buildBeads(o: BeadOptions): SceneParts {
   const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
 
   const isColumn = o.path === 'column';
-  const layers = isColumn ? 34 : 7;
+  const layers = isColumn ? 34 : 6;
   const radial = 8;
-  const beadW = isColumn ? 0.05 : 0.055, beadH = isColumn ? 0.032 : 0.04;
+  const beadW = isColumn ? 0.05 : 0.026, beadH = isColumn ? 0.032 : 0.022;
   const layerGap = beadH * 1.75;
   const closed = isColumn;
 
@@ -84,7 +84,7 @@ export function buildBeads(o: BeadOptions): SceneParts {
         const a1 = Math.atan2(cur[1] - prev[1], cur[0] - prev[0]), a2 = Math.atan2(next[1] - cur[1], next[0] - cur[0]);
         turn = Math.abs(Math.atan2(Math.sin(a2 - a1), Math.cos(a2 - a1)));
       }
-      const swell = Math.min(1, turn * (isColumn ? 9 : 1.6));
+      const swell = Math.min(1, turn * (isColumn ? 9 : 0.45));
       const w = beadW * (1 + 0.6 * swell);
       const side = new THREE.Vector3().crossVectors(t, Y).normalize();
       const c = new THREE.Vector3(cur[0], y, cur[1]);
@@ -161,12 +161,12 @@ export function buildBeads(o: BeadOptions): SceneParts {
 
     if (isColumn) {
       const a = t * 0.12 + p * 1.4;
-      const r = 4.6, el = 0.55 - p * 0.35;
-      camera.position.set(Math.sin(a) * r, el * r * 0.5 + 0.4, Math.cos(a) * r);
-      camera.lookAt(0, -0.05, 0);
+      const r = 6.4, el = 0.5 - p * 0.3;
+      camera.position.set(Math.sin(a) * r, el * r * 0.5 + 0.3, Math.cos(a) * r);
+      camera.lookAt(0, -0.1, 0);
     } else {
       const a = 0.6 + t * 0.06 + p * 0.5;
-      camera.position.set(Math.sin(a) * 3.4, 2.6 - p * 0.6, Math.cos(a) * 3.4);
+      camera.position.set(Math.sin(a) * 4.6, 3.3 - p * 0.8, Math.cos(a) * 4.6);
       camera.lookAt(0, 0, 0);
     }
   };

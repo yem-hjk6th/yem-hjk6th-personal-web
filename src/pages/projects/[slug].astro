@@ -30,12 +30,14 @@ const sections: { h: string; body: string | null }[] = [
       <figcaption><span class="todo">TODO: project photo or video (media list is empty)</span></figcaption>
     </figure>
     <div class="body">
+      <div class="sections">
       {sections.map((s) => (
         <section>
           <h2>{s.h}</h2>
           {s.body ? <p>{s.body}</p> : <p><span class="todo">TODO: {s.h.toLowerCase()} not yet written in projects.yaml</span></p>}
         </section>
       ))}
+      </div>
       <aside>
         <h2>Role</h2>
         <p>{p.role}</p>
@@ -72,7 +74,8 @@ const sections: { h: string; body: string | null }[] = [
   .art :global(svg) { width: 100%; max-height: 420px; }
   .art figcaption { margin-top: 1rem; }
   .body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; }
-  @media (min-width: 60rem) { .body { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); column-gap: 4rem; } .body aside { grid-column: 2; grid-row: 1 / span 3; } }
+  @media (min-width: 60rem) { .body { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); column-gap: 4rem; } .body aside { align-self: start; } }
+  .sections { display: grid; gap: 2rem; align-content: start; }
   section p, aside p { margin: 0; max-width: 66ch; }
   h2 { font-size: 1rem; font-weight: 700; margin: 0 0 .4rem; font-variation-settings: 'wdth' 100; }
   aside h2:not(:first-child) { margin-top: 1.5rem; }

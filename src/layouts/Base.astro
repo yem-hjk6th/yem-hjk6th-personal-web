@@ -30,7 +30,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   [hidden] { display: none !important; }
   .skip-link { position: absolute; left: 1rem; top: -4rem; z-index: 100; padding: .6rem 1rem; background: #fff; color: #000; border-radius: 4px; }
   .skip-link:focus { top: 1rem; }
-  .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .sr-only, .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   html.lenis, html.lenis body { height: auto; }
   .lenis.lenis-smooth { scroll-behavior: auto !important; }
   .lenis.lenis-stopped { overflow: hidden; }

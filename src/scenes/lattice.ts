@@ -80,8 +80,9 @@ export function buildLattice(o: LatticeOptions): SceneParts {
     while (nc < nodes.length && nodes[nc].y <= topY + 0.001) nc++;
     nodeMesh.count = nc;
     group.rotation.y = t * 0.1 + p * 1.2;
-    camera.position.set(0, 0.6 + p * 0.3, 5.6);
-    camera.lookAt(0, 0, 0);
+    const focus = -1.3 + 1.3 * p; // follow the top of the build
+    camera.position.set(0, focus + 1.4, 7.4 + p * 1.2);
+    camera.lookAt(0, focus, 0);
   };
 
   return { scene, camera, update, dispose() { strutGeo.dispose(); strutMat.dispose(); } };
