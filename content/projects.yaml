@@ -1,0 +1,107 @@
+- slug: vision-guided-pellet-extrusion
+  title: "Robot telemetry and vision for pellet extrusion"
+  years: "2025 - present"
+  tags: [robotics, cv, fabrication]
+  role: "Doctoral research. I instrumented the lab's KUKA KR10 pellet-extrusion cell with RSI telemetry, a stereo camera, a bead camera and a nozzle borescope on custom printed mounts, wrote a logger that records robot pose, speed and commanded extruder speed in sync with video, calibrated the camera to the robot, and trained a model that reads bead width from borescope images. The robot, extruder and base control chain were set up earlier in the lab."
+  credits: "Computational Tectonics Lab, University of Virginia; advisor Ehsan Baharlou."
+  problem: "In robotic extrusion the robot slows at corners while the extruder keeps its commanded speed, so the deposited bead changes. The process is hard to observe while it runs."
+  what_i_did: "Built the sensing and logging setup, ran printing experiments, calibrated the stereo camera to the robot, profiled depth accuracy against distance, and benchmarked deep-learning models for bead-width measurement. Then built a closed-loop controller: a camera reads the bead width while printing, and the PC adjusts the robot's speed override through RSI every few milliseconds. Closed-loop prints ran in 2026; results are in preparation."
+  result: null
+  links:
+    - label: "ROS 2 port of the closed-loop pipeline (code and a real session log)"
+      url: "https://github.com/yem-hjk6th/RSI_proj_ROS"
+  media: []
+- slug: rsi-proj-ros
+  title: "ROS 2 port of a robot speed-override controller"
+  years: "2026"
+  tags: [robotics, software]
+  role: "Author."
+  credits: "Repository author: Ye Ma."
+  problem: "A lab pipeline that controls a KUKA robot's speed in real time ran as Windows scripts. To share it and reuse it on another robot, it needed a tested, documented code base."
+  what_i_did: "Ported the pipeline to ROS 2 (Jazzy): an RSI bridge with a 4 ms reply loop in its own process, the control law, the camera width readout, an EthernetKRL bridge for a robot without RSI, session recording with rosbag2, and a replay of a real print that checks the port against the original logs. Safety rules (no path correction, override clamp, watchdog ramp) are enforced in code and tested in CI."
+  result: "In a lock-step replay of a real print, the ported controller reproduces the original pipeline's speed commands at all 1719 updates."
+  links:
+    - label: "GitHub repository"
+      url: "https://github.com/yem-hjk6th/RSI_proj_ROS"
+  media: []
+- slug: mycelium-mineral-panels
+  title: "Toolpath-informed mycelium-mineral panels"
+  years: "2025"
+  tags: [fabrication, aec, robotics]
+  role: "Co-author."
+  credits: "With I. Datta and E. Baharlou (ACADIA 2025)."
+  problem: "Printed mineral panels can host mycelium growth, and the printed path shapes how much surface the fungus can colonize."
+  what_i_did: "The paper compares three toolpath strategies (Poisson-disk sampling with a travelling-salesman route, Kangaroo physics, and a recursive Hilbert curve) for robotically printed 400 x 400 mm oyster-shell mineral panels."
+  result: "The Hilbert pattern gave the largest predicted mycelium growth area (44.6% versus 27.9-34.8%)."
+  links:
+    - label: "ACADIA 2025 paper"
+      url: "https://doi.org/10.52842/conf.acadia.2025.2.170"
+  media: []
+- slug: living-column
+  title: "Living Column exhibition"
+  years: "2025"
+  tags: [aec, fabrication]
+  role: "Research assistant on the exhibited piece."
+  credits: "Created by Ehsan Baharlou; research assistants I. Datta and Y. Ma."
+  problem: "Show a printed clay column colonized by mycelium as a built, living object."
+  what_i_did: "Supported fabrication of the printed column as a research assistant."
+  result: null
+  links: []
+  media: []
+- slug: clay-paste-extruder
+  title: "Clay paste extruder commissioning"
+  years: "2024"
+  tags: [robotics, fabrication]
+  role: "Graduate research assistant. I set up the extruder, wiring and control, calibrated its speed, wrote the KUKA robot programs and ran the print trials."
+  credits: "Clay recipe and process guidance from I. Datta and E. Baharlou."
+  problem: "Make a paste extruder print reliably on a KUKA KR10 with a clay mix."
+  what_i_did: "Mounted a WASP clay kit on the robot, wired the stepper motor, driver and Arduino controller, calibrated extrusion speed, and mapped water content, air pressure and robot speed over ten trials. Failures such as tubing clogs and controller overheating were diagnosed and documented."
+  result: null
+  links: []
+  media: []
+- slug: wood-hygroscopic-ml
+  title: "Wood moisture bending: sensing and machine learning"
+  years: "2024 - 2025"
+  tags: [cv, ml, aec]
+  role: "First author. I built the humidity chamber, the camera-based curvature measurement, the dataset and the model comparison."
+  credits: "With E. Baharlou (ARCC 2025)."
+  problem: "Wood layers bend as moisture changes. Predicting the bending from measurements would help designers use it."
+  what_i_did: "Built an Arduino humidity chamber and a Raspberry Pi webcam pipeline (OpenCV edge and Hough analysis) to measure curvature of wood bilayer samples, then compared regression models against an analytical baseline."
+  result: null
+  links: []
+  media: []
+- slug: hsr-station-competitions
+  title: "High-speed-rail station competitions"
+  years: "2021 - 2022"
+  tags: [aec, design]
+  role: "Architectural designer at a design firm in Shanghai: concept design, station-area urban design and interior modeling; led the competition team for one station (Yinan, Shandong)."
+  credits: "Firm team project."
+  problem: "Competition bids for new high-speed-rail stations."
+  what_i_did: "Contributed to several station competition bids and led the Yinan station team."
+  result: null
+  links: []
+  media: []
+- slug: cs6501-3dcv-pointcloud-robustness
+  title: "Point-cloud classifier robustness benchmark"
+  years: "2026"
+  tags: [cv, 3d]
+  status: draft
+  role: "Phase 1 of a team project (CS 6501 3D Computer Vision): a benchmark of how missing geometry affects point-cloud classifiers."
+  credits: "Team project."
+  problem: "Point-cloud classifiers are trained on complete shapes, but real scans are partial."
+  what_i_did: "Phase 1: benchmark how missing geometry (random drop, patch and part removal, planar cut, limited views) changes classifier accuracy and calibration."
+  result: null
+  links: []
+  media: []
+- slug: cs6501-fourier-net-registration
+  title: "Fourier-Net deformable image registration"
+  years: "2024"
+  tags: [cv, ml]
+  status: draft
+  role: "Application, training and evaluation of an existing model (from the original Fourier-Net authors), run on a university HPC cluster. I also wrote the introduction, background and conclusion."
+  credits: "Team project (CS 6501 Machine Learning in Image Analysis)."
+  problem: "Does a registration network trained on MNIST digits carry over to unseen QuickDraw shapes?"
+  what_i_did: "Trained and evaluated Fourier-Net and Fourier-Net-Diff on MNIST and tested transfer to unseen shapes using Dice overlap."
+  result: null
+  links: []
+  media: []

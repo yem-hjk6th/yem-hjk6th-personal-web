@@ -1,0 +1,29 @@
+name: Ye Ma
+affiliation: PhD candidate, School of Architecture, University of Virginia
+location: Charlottesville, VA
+headlines:
+  robotics_cv: "PhD candidate building computer vision and robot-telemetry tools for in-process monitoring of robotic 3D printing"
+  aec_fabrication: "PhD candidate in robotic fabrication, construction-scale 3D printing and computational design, with an architecture background"
+bio: >
+  I am a PhD candidate in the Constructed Environment program at the University of Virginia,
+  trained as an architect (B.Arch, M.Arch). My dissertation work instruments a KUKA robot
+  pellet-extrusion cell with robot telemetry and cameras, so that robot motion and material
+  flow can be measured and eventually synchronized. Earlier lab projects cover clay paste printing,
+  toolpath design for mycelium-mineral panels, and sensor-plus-machine-learning studies of wood.
+  I work between design, robotics and computer vision.
+contact:
+  email: hjk6th@virginia.edu
+  linkedin: https://www.linkedin.com/in/yema95
+  github: https://github.com/yem-hjk6th
+  orcid: https://orcid.org/0009-0005-4845-0937
+education:
+  - degree: "Ph.D., Constructed Environment"
+    school: "University of Virginia, School of Architecture"
+    years: "2023 - present"
+    detail: "Dissertation proposal: Vision-Guided Synchronization of Robot Motion and Material Flow in Pellet Extrusion (defended 2026). Advisor: Ehsan Baharlou."
+  - degree: "Master of Architecture (M.Arch)"
+    school: "University of Southern California, School of Architecture"
+    years: "2019 - 2021"
+  - degree: "Bachelor of Architecture (B.Arch, five-year professional degree)"
+    school: "Xi'an University of Architecture and Technology"
+    years: "2013 - 2018"
