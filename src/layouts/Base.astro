@@ -1,6 +1,7 @@
 ---
 import { profile } from '../lib/content';
 import { archivoFonts } from '../lib/fonts';
+import { ClientRouter } from 'astro:transitions';
 interface Props { title?: string; description?: string; noindex?: boolean }
 const { title, description = profile.headlines.robotics_cv, noindex = false } = Astro.props;
 const fullTitle = title ? `${title} | ${profile.name}` : profile.name;
@@ -17,6 +18,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonical} />
     {archivoFonts.map((f) => <link rel="preload" href={f} as="font" type="font/woff2" crossorigin />)}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <ClientRouter />
     {noindex && <meta name="robots" content="noindex" />}
     <slot name="head" />
   </head>

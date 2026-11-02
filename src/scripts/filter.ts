@@ -27,7 +27,8 @@ export function initFilter(root: ParentNode = document) {
     if (push) {
       const url = new URL(location.href);
       if (id === 'all') url.searchParams.delete('for'); else url.searchParams.set('for', id);
-      history.replaceState(null, '', url);
+      // Keep the router's history state, or Back would skip this page.
+      history.replaceState(history.state, '', url);
     }
     document.dispatchEvent(new CustomEvent('audiencechange', { detail: id }));
   };

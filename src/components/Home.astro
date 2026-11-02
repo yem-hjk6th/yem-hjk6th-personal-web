@@ -79,9 +79,11 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
           <li class="layer" data-audiences={audiencesFor(p).join(' ')}>
             <Spotlight client:visible>
               <a class="layer-link" href={`/projects/${p.slug}/`}>
-                <MediaFrame image={resolveImage(p.media.thumbnail, p.slug)} slug={p.slug} size="thumb" class="layer-thumb" />
+                <span class="layer-thumb" transition:name={`media-${p.slug}`}>
+                  <MediaFrame image={resolveImage(p.media.thumbnail, p.slug)} slug={p.slug} size="thumb" />
+                </span>
                 <span class="layer-main">
-                  <span class="layer-title">{p.title}{p.status === 'draft' && <span class="draft-label">In progress</span>}</span>
+                  <span class="layer-title" transition:name={`title-${p.slug}`}>{p.title}{p.status === 'draft' && <span class="draft-label">In progress</span>}</span>
                   <span class="layer-line">{metaLine(p)}</span>
                   <span class="layer-problem">{firstSentence(p.problem)}</span>
                 </span>
@@ -183,11 +185,17 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   import { mountHero } from '../scripts/hero';
   import { initFloatingWindow } from '../scripts/floating-window';
   import { initViewToggle } from '../scripts/view-toggle';
-  initMotion();
-  initFilter();
-  initViewToggle(document.querySelector<HTMLElement>('#work'));
-  mountHero(document.querySelector<HTMLVideoElement>('#hero-video'));
-  initFloatingWindow(document.querySelector('.name-btn'), document.querySelector<HTMLDialogElement>('#float-win'));
+  import { onPageLoad } from '../scripts/lifecycle';
+  // With the client router this module runs once; the page-load hook re-runs on
+  // every visit to the homepage, including back/forward navigation.
+  onPageLoad(() => {
+    if (!document.querySelector('.home')) return;
+    initMotion();
+    initFilter();
+    initViewToggle(document.querySelector<HTMLElement>('#work'));
+    mountHero(document.querySelector<HTMLVideoElement>('#hero-video'));
+    initFloatingWindow(document.querySelector('.name-btn'), document.querySelector<HTMLDialogElement>('#float-win'));
+  });
 </script>
 
 <style>
@@ -278,8 +286,9 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   @media (min-width: 60rem) { .layer-link { grid-template-columns: 132px minmax(0, 1fr) 14rem; gap: 2rem; } }
   .layer-link:hover, .layer-link:active { color: var(--ink); }
   .layer-link:hover .layer-title, .layer-link:focus-visible .layer-title { color: var(--gold); text-decoration: underline; text-decoration-thickness: 3px; }
-  .layer-link :global(.layer-thumb) { width: 88px; height: 66px; border-radius: 6px; overflow: hidden; }
-  @media (min-width: 60rem) { .layer-link :global(.layer-thumb) { width: 132px; height: 99px; } }
+  .layer-thumb { display: block; width: 88px; height: 66px; border-radius: 6px; overflow: hidden; }
+  .layer-thumb :global(.media) { height: 100%; }
+  @media (min-width: 60rem) { .layer-thumb { width: 132px; height: 99px; } }
   .layer-main { display: grid; gap: .25rem; }
   .layer-title { color: var(--blue); font-size: clamp(1.15rem, 2vw, 1.5rem); font-weight: 700; line-height: 1.2; font-variation-settings: 'wdth' 108; }
   .layer-title .draft-label { margin-left: .6rem; vertical-align: .15em; }
@@ -293,7 +302,7 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   .work[data-layout='grid'] .layers { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); gap: 2.5rem 1.75rem; background: none; }
   .work[data-layout='grid'] .layer { padding: 0; background: none; }
   .work[data-layout='grid'] .layer-link { grid-template-columns: minmax(0, 1fr); align-items: start; gap: .5rem; padding: .25rem 0 0; }
-  .work[data-layout='grid'] .layer-link :global(.layer-thumb) { width: 100%; height: auto; aspect-ratio: 4 / 3; margin-bottom: .5rem; }
+  .work[data-layout='grid'] .layer-thumb { width: 100%; height: auto; aspect-ratio: 4 / 3; margin-bottom: .5rem; }
   .work[data-layout='grid'] .layer-problem, .work[data-layout='grid'] .layer-tags { display: none; }
 
   /* About */

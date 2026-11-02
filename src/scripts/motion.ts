@@ -8,12 +8,23 @@ gsap.registerPlugin(ScrollTrigger);
 export const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let lenis: Lenis | null = null;
+const tick = (time: number) => lenis?.raf(time * 1000);
+
+// Smooth scrolling lives on the homepage only. The client router keeps this
+// module alive across pages, so it is torn down before each page swap and
+// created again when the homepage loads.
+document.addEventListener('astro:before-swap', () => {
+  if (!lenis) return;
+  gsap.ticker.remove(tick);
+  lenis.destroy();
+  lenis = null;
+});
 
 export function initMotion() {
   if (prefersReduced() || lenis) return { gsap, ScrollTrigger, lenis };
   lenis = new Lenis({ lerp: 0.12, smoothWheel: true });
   lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.add((time) => lenis?.raf(time * 1000));
+  gsap.ticker.add(tick);
   gsap.ticker.lagSmoothing(0);
   // In-page anchor links go through Lenis so they glide instead of jump.
   document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) =>
@@ -23,7 +34,7 @@ export function initMotion() {
       if (!el) return;
       e.preventDefault();
       lenis!.scrollTo(el, { offset: -16 });
-      history.replaceState(null, '', id);
+      history.replaceState(history.state, '', id);
       el.setAttribute('tabindex', '-1');
       el.focus({ preventScroll: true });
     }),
