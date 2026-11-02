@@ -3,6 +3,8 @@
 // React Bits interactions, on the dark theme from styles/theme.css.
 import MediaFrame from './MediaFrame.astro';
 import SpotlightReveal from './SpotlightReveal.astro';
+import Video from './Video.astro';
+import heroStill from '../assets/media/hero/rsi_pixel_story_still.png';
 import stereoLeft from '../assets/stereo/left.jpg';
 import stereoDisp from '../assets/stereo/disp.jpg';
 import {
@@ -36,9 +38,8 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   <main id="main">
     <section class="hero" id="top" aria-labelledby="name">
       <div class="stage">
-        <video id="hero-video" src="/media/hero/rsi_pixel_story.mp4" poster="/media/hero/rsi_pixel_story_still.png"
-          width="1280" height="720" muted loop playsinline preload="auto"
-          aria-label="Pixel animation in three scenes: a robot prints while four sensors (robot telemetry, a stereo camera, a bead camera and a nozzle borescope) send data; the view steps out to a lab monitor that builds a live 3D reconstruction of the print; then a large robot arm prints a ship hull."></video>
+        <Video id="hero-video" src="/media/hero/rsi_pixel_story.mp4" poster={heroStill} posterFormat="png" width={1280} height={720}
+          label="Pixel animation in three scenes: a robot prints while four sensors (robot telemetry, a stereo camera, a bead camera and a nozzle borescope) send data; the view steps out to a lab monitor that builds a live 3D reconstruction of the print; then a large robot arm prints a ship hull." />
       </div>
       <div class="hero-text">
         <h1 id="name" class="name">
@@ -182,7 +183,6 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
 <script>
   import { initMotion } from '../scripts/motion';
   import { initFilter } from '../scripts/filter';
-  import { mountHero } from '../scripts/hero';
   import { initFloatingWindow } from '../scripts/floating-window';
   import { initViewToggle } from '../scripts/view-toggle';
   import { onPageLoad } from '../scripts/lifecycle';
@@ -193,7 +193,6 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
     initMotion();
     initFilter();
     initViewToggle(document.querySelector<HTMLElement>('#work'));
-    mountHero(document.querySelector<HTMLVideoElement>('#hero-video'));
     initFloatingWindow(document.querySelector('.name-btn'), document.querySelector<HTMLDialogElement>('#float-win'));
   });
 </script>
@@ -222,7 +221,7 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
      lighten lets its black background show the hero's layer-line texture. */
   /* Pinned to the top right and kept short enough that scene 2's full-frame room clears the name below it. */
   .stage { position: absolute; top: 4rem; right: var(--pad); width: 52%; height: max(14rem, calc(100svh - 34rem)); pointer-events: none; }
-  .stage video { width: 100%; height: 100%; object-fit: contain; object-position: right top; image-rendering: pixelated; image-rendering: crisp-edges; mix-blend-mode: lighten; }
+  .stage :global(video) { width: 100%; height: 100%; object-fit: contain; object-position: right top; image-rendering: pixelated; image-rendering: crisp-edges; mix-blend-mode: lighten; }
   .hero-text { position: relative; align-self: end; padding-bottom: 2rem; }
   .name { font-size: clamp(3.6rem, 13vw, 11.5rem); line-height: .86; font-weight: 820; letter-spacing: -.02em;
     font-variation-settings: 'wdth' 125; margin-left: -.04em; }

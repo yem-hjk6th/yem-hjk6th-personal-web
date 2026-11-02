@@ -1,0 +1,40 @@
+---
+// A silent looping clip: muted, loop, playsinline, preload="none" and a poster.
+// It plays only while on screen and pauses off screen. Autoplay is started by
+// the script below rather than the autoplay attribute, so readers who ask for
+// reduced motion (or have no JS) get the poster only and nothing is downloaded.
+// The video file is served as-is from public/; the poster goes through astro:assets.
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+interface Props {
+  /** URL of the file under public/, e.g. /media/hero/clip.mp4 */
+  src: string;
+  poster?: ImageMetadata | null;
+  /** poster output format; pixel art should stay lossless (png) */
+  posterFormat?: 'avif' | 'webp' | 'png' | 'jpg';
+  width: number;
+  height: number;
+  /** what the clip shows; the video carries no sound */
+  label: string;
+  id?: string;
+  class?: string;
+}
+const { src, poster, posterFormat = 'webp', width, height, label, id, class: cls } = Astro.props;
+const posterUrl = poster ? (await getImage({ src: poster, format: posterFormat, width: Math.min(poster.width, width) })).src : undefined;
+---
+<video id={id} class={cls} src={src} poster={posterUrl} width={width} height={height}
+  muted loop playsinline preload="none" disablepictureinpicture aria-label={label} data-autoplay></video>
+
+<script>
+  import { onPageLoad } from '../scripts/lifecycle';
+  const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  onPageLoad(() => {
+    if (reduce()) return;
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      const v = e.target as HTMLVideoElement;
+      if (e.isIntersecting) v.play().catch(() => {}); else v.pause();
+    }), { threshold: 0.25 });
+    document.querySelectorAll<HTMLVideoElement>('video[data-autoplay]').forEach((v) => io.observe(v));
+    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
+  });
+</script>

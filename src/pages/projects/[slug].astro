@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import MediaFrame from '../../components/MediaFrame.astro';
+import Video from '../../components/Video.astro';
 import { projects, tagLabel, type Project } from '../../lib/content';
 import { resolveImage, resolveVideo } from '../../lib/media';
 import '../../styles/theme.css';
@@ -73,7 +74,8 @@ const video = resolveVideo(p.media.video, p.slug);
           {video && (
             video.url ? (
               <figure class="video">
-                <video controls preload="none" playsinline poster={video.posterUrl ?? undefined} src={video.url}></video>
+                <Video src={video.url} poster={video.poster} width={video.poster?.width ?? 1280} height={video.poster?.height ?? 720}
+                  label={video.caption ?? `Video for ${p.title}`} />
                 {(video.caption || video.credit) && <figcaption>{video.caption} {video.credit}</figcaption>}
               </figure>
             ) : import.meta.env.DEV && <p><span class="todo">TODO: add the file {video.path} (listed in projects.yaml, not in the repo yet)</span></p>
@@ -118,7 +120,7 @@ const video = resolveVideo(p.media.video, p.slug);
   .none { color: var(--muted); }
   .gallery { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; }
   .video { margin: 0; }
-  .video video { width: 100%; border-radius: 10px; background: var(--surface); }
+  .video :global(video) { display: block; width: 100%; height: auto; border-radius: 10px; background: var(--surface); }
   .video figcaption { margin-top: .75rem; color: var(--muted); font-size: .9375rem; }
   .next { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); display: grid; gap: .25rem; }
   .next span { color: var(--muted); font-size: .9375rem; }

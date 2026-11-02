@@ -1,8 +1,11 @@
 ---
 // One project image, cropped and zoomed by display only:
 // object-fit: cover + object-position (focus) + scale (zoom) around the focus point.
-// The file is served exactly as stored. If the file is not in the repo yet,
-// the generated drawing is shown with a visible TODO naming the missing path.
+// Raster files go through astro:assets (<Picture>: AVIF/WebP at a few widths,
+// scaled down and re-encoded only); SVG drawings are served unchanged.
+// If the file is not in the repo yet, the generated drawing is shown with a
+// visible TODO naming the missing path.
+import { Picture } from 'astro:assets';
 import ProjectGlyph from './ProjectGlyph.astro';
 import type { ResolvedImage } from '../lib/media';
 interface Props {
@@ -19,13 +22,22 @@ interface Props {
 const { image, slug, size, class: cls, showCredit = true, showTodo = import.meta.env.DEV } = Astro.props;
 const style = image?.url ? `--focus: ${image.focus}; --zoom: ${image.zoom};` : undefined;
 // Wide technical drawings must not be cropped on the project page; photos fill the frame.
-const fit = image?.fit ?? (size === 'large' && image && /\.svg$/i.test(image.src) ? 'contain' : 'cover');
+const fit = image?.fit ?? (size === 'large' && image?.svgUrl ? 'contain' : 'cover');
+// Thumbnails: 132 px in the list, up to ~22rem as grid cards. Large: the content column.
+// A display zoom shows a smaller part of the file, so ask for proportionally more pixels.
+const zoom = image?.zoom ?? 1;
+const base = size === 'thumb' ? [320, 560, 800] : [640, 960, 1280, 1600];
+const widths = image?.asset ? [...new Set(base.map((w) => Math.min(image.asset!.width, Math.round(w * Math.min(zoom, 2)))))] : [];
+const sizes = size === 'thumb' ? '(min-width: 60rem) 22rem, 100vw' : '(min-width: 64rem) 44rem, 100vw';
+const loading = size === 'thumb' ? 'lazy' : 'eager';
 ---
 <figure class:list={['media', `media-${size}`, image?.url && `fit-${fit}`, cls]}>
   <div class="frame" style={style}>
-    {image?.url
-      ? <img src={image.url} alt={image.alt} loading={size === 'thumb' ? 'lazy' : 'eager'} decoding="async" />
-      : <ProjectGlyph slug={slug} />}
+    {image?.asset
+      ? <Picture src={image.asset} alt={image.alt} widths={widths} sizes={sizes} formats={['avif', 'webp']} loading={loading} decoding="async" />
+      : image?.svgUrl
+        ? <img src={image.svgUrl} alt={image.alt} loading={loading} decoding="async" />
+        : <ProjectGlyph slug={slug} />}
   </div>
   {size === 'large' && (
     <figcaption>
@@ -41,16 +53,17 @@ const fit = image?.fit ?? (size === 'large' && image && /\.svg$/i.test(image.src
   .media { margin: 0; min-width: 0; }
   .frame { position: relative; overflow: hidden; width: 100%; height: 100%; color: var(--blue); background: var(--surface); }
   .media-large .frame { aspect-ratio: 3 / 2; border-radius: 10px; }
-  .frame img {
+  .frame :global(picture) { display: contents; }
+  .frame :global(img) {
     width: 100%; height: 100%; display: block;
     object-fit: cover; object-position: var(--focus, 50% 50%);
     transform: scale(var(--zoom, 1)); transform-origin: var(--focus, 50% 50%);
   }
   /* contain: show the whole image. Large frames take the image's own aspect
      ratio (no letterbox); thumbnails keep their frame and letterbox inside it. */
-  .fit-contain .frame img { object-fit: contain; }
+  .fit-contain .frame :global(img) { object-fit: contain; }
   .media-large.fit-contain .frame { aspect-ratio: auto; }
-  .media-large.fit-contain .frame img { height: auto; }
+  .media-large.fit-contain .frame :global(img) { height: auto; }
   .frame :global(svg) { width: 100%; height: 100%; padding: 6%; }
   figcaption { margin-top: .75rem; display: grid; gap: .5rem; justify-items: start; }
   .credit { color: var(--muted); font-size: .9375rem; }

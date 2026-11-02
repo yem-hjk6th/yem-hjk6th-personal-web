@@ -27,9 +27,16 @@ of large `images` and an optional `video`. Leave it as `media: []` (or leave a
 field out) until files exist; the page then shows the generated drawing for
 that project (`src/lib/glyph.ts`).
 
-Files live in **`public/media/<slug>/`** and are served unchanged at
-`/media/<slug>/<file>`. In the YAML, `src` is the path relative to
-`public/media/`.
+Images (and video posters) live in **`src/assets/media/<slug>/`**. Raster
+files go through `astro:assets`: the build serves them as AVIF/WebP at a few
+widths (scaled down and re-encoded only, never cropped). SVG drawings are
+served unchanged. Videos live in **`public/media/<slug>/`** and are served
+unchanged at `/media/<slug>/<file>`. In the YAML, `src` (and `poster`) is the
+path relative to those folders.
+
+Videos play through `src/components/Video.astro`: muted, looping, no
+download until they scroll into view (`preload="none"`), paused off screen,
+and only the poster under `prefers-reduced-motion`.
 
 ```yaml
 media:
@@ -96,7 +103,7 @@ WCAG AA:
 pixel art rendered at 1280 x 720 (H.264, about 165 KB), made with
 [animate](https://github.com/cth9191/animate) (MIT) from a storyboard. Its
 source is kept outside this repo; to change a scene, re-render and replace the
-file. `rsi_pixel_story_still.png` (a frame of scene 3) is the poster.
+file. `src/assets/media/hero/rsi_pixel_story_still.png` (a frame of scene 3) is the poster.
 `src/scenes/pixel-story.ts` is the earlier code-drawn canvas version, kept for
 reference and no longer imported.
 
@@ -170,7 +177,7 @@ contact form; contact is the links in `content/profile.yaml`.
 | [React Bits](https://github.com/DavidHDev/react-bits) components | MIT + Commons Clause | See below |
 | [animate](https://github.com/cth9191/animate) | MIT | Used offline to render the hero video; no code from it ships with the site |
 | Archivo | SIL Open Font License 1.1 | © 2020 The Archivo Project Authors, via `@fontsource-variable/archivo` |
-| Living Column photo (`public/media/living-column/`) | Not an open licence; used on this site with Ye's approval | Credited on the page as "Photo: CT .lab, University of Virginia, 2025". Do not reuse it elsewhere without asking the lab |
+| Living Column photo (`src/assets/media/living-column/`) | Not an open licence; used on this site with Ye's approval | Credited on the page as "Photo: CT .lab, University of Virginia, 2025". Do not reuse it elsewhere without asking the lab |
 
 **GSAP.** GSAP 3.15 is published under GreenSock's Standard "No Charge"
 License (<https://gsap.com/standard-license>; the npm package's `license`

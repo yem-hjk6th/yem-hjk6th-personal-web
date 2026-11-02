@@ -1,6 +1,9 @@
 // Project media: one thumbnail, a list of large images and an optional video,
-// all stored unchanged under public/media/<slug>/ and referenced from
-// projects.yaml by a path relative to public/media/.
+// referenced from projects.yaml by a path relative to the media folders:
+//   images (and video posters): src/assets/media/<slug>/  -> scaled down and
+//     re-encoded (AVIF/WebP) by astro:assets; SVG drawings are served unchanged
+//   videos: public/media/<slug>/  -> served unchanged (Astro does not process video)
+// Images are only ever scaled down and compressed, never cropped or edited.
 //
 // Images can be shown zoomed in by display only (CSS object-fit, object-position
 // and scale); the file itself is never edited:
@@ -14,6 +17,7 @@
 // generated drawing instead.
 import fs from 'node:fs';
 import path from 'node:path';
+import type { ImageMetadata } from 'astro';
 
 export interface MediaImage {
   src: string;
@@ -27,13 +31,27 @@ export interface MediaImage {
 export interface MediaVideo { src: string; poster?: string; caption?: string; credit?: string }
 export interface Media { thumbnail?: MediaImage; images?: MediaImage[]; video?: MediaVideo }
 
-/** A media item resolved for rendering; `url` is null when the file is missing. */
-export interface ResolvedImage extends MediaImage { url: string | null; path: string; zoom: number; focus: string }
+/**
+ * A media item resolved for rendering. `asset` is set for raster images, `svgUrl`
+ * for SVG drawings; `url` is whichever applies, null when the file is missing.
+ */
+export interface ResolvedImage extends MediaImage {
+  asset: ImageMetadata | null;
+  svgUrl: string | null;
+  url: string | null;
+  path: string;
+  zoom: number;
+  focus: string;
+}
 
-const root = path.resolve(process.cwd(), 'public/media');
+const PREFIX = '../assets/media/';
+const raster = import.meta.glob<ImageMetadata>('../assets/media/**/*.{jpg,jpeg,png,webp,avif}', { eager: true, import: 'default' });
+const svgs = import.meta.glob<string>('../assets/media/**/*.svg', { eager: true, query: '?url', import: 'default' });
+const videoRoot = path.resolve(process.cwd(), 'public/media');
 const FOCUS = /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/;
 
-const fileUrl = (src: string) => (fs.existsSync(path.join(root, src)) ? `/media/${src}` : null);
+/** Raster image (or video poster) by its path under src/assets/media/. */
+export const rasterAsset = (src: string): ImageMetadata | null => raster[PREFIX + src] ?? null;
 
 /** projects.yaml may write `media: []` for "no media yet". */
 export function normalizeMedia(raw: unknown, slug: string): Media {
@@ -50,11 +68,14 @@ export function resolveImage(img: MediaImage | undefined, slug: string): Resolve
   if (typeof zoom !== 'number' || zoom < 1 || zoom > 4) throw new Error(`${slug}: media zoom must be a number from 1 to 4 (got ${img.zoom})`);
   if (!FOCUS.test(focus)) throw new Error(`${slug}: media focus must look like "52% 72%" (got ${img.focus})`);
   if (img.fit !== undefined && img.fit !== 'cover' && img.fit !== 'contain') throw new Error(`${slug}: media fit must be "cover" or "contain" (got ${img.fit})`);
-  return { ...img, zoom, focus, url: fileUrl(img.src), path: `public/media/${img.src}` };
+  const asset = rasterAsset(img.src);
+  const svgUrl = svgs[PREFIX + img.src] ?? null;
+  return { ...img, zoom, focus, asset, svgUrl, url: asset?.src ?? svgUrl, path: `src/assets/media/${img.src}` };
 }
 
 export function resolveVideo(v: MediaVideo | undefined, slug: string) {
   if (!v) return null;
   if (!v.src) throw new Error(`${slug}: media video needs src`);
-  return { ...v, url: fileUrl(v.src), posterUrl: v.poster ? fileUrl(v.poster) : null, path: `public/media/${v.src}` };
+  const url = fs.existsSync(path.join(videoRoot, v.src)) ? `/media/${v.src}` : null;
+  return { ...v, url, poster: v.poster ? rasterAsset(v.poster) : null, path: `public/media/${v.src}` };
 }
