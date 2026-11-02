@@ -13,6 +13,8 @@ export interface Project {
   slug: string;
   title: string;
   years: string;
+  /** one-line summary for listings: where the work was done and my role, in a few words */
+  meta: { place?: string; role: string };
   tags: string[];
   status?: 'draft';
   role: string;
@@ -89,6 +91,9 @@ export const tagLabel: Record<string, string> = {
   design: 'Design',
   sensing: 'Sensing',
 };
+
+/** The listing's metadata line: years · place · role. */
+export const metaLine = (p: Project) => [p.years, p.meta.place, p.meta.role].filter(Boolean).join(' · ');
 
 /** First sentence of a field, for compact listings. */
 export const firstSentence = (s: string) => {

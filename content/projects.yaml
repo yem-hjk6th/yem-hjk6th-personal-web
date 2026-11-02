@@ -1,6 +1,9 @@
 - slug: vision-guided-pellet-extrusion
   title: "Robot telemetry and vision for pellet extrusion"
   years: "2025 - present"
+  meta:
+    place: "Computational Tectonics Lab, UVA"
+    role: "Doctoral research"
   tags: [robotics, cv, fabrication]
   role: "Doctoral research. I instrumented the lab's KUKA KR10 pellet-extrusion cell with RSI telemetry, a stereo camera, a bead camera and a nozzle borescope on custom printed mounts, wrote a logger that records robot pose, speed and commanded extruder speed in sync with video, calibrated the camera to the robot, and trained a model that reads bead width from borescope images. The robot, extruder and base control chain were set up earlier in the lab."
   credits: "Computational Tectonics Lab, University of Virginia; advisor Ehsan Baharlou."
@@ -14,6 +17,8 @@
 - slug: rsi-proj-ros
   title: "ROS 2 port of a robot speed-override controller"
   years: "2026"
+  meta:
+    role: "Author"
   tags: [robotics, software]
   role: "Author. Implemented with Claude Code (AI coding assistant)."
   credits: "Repository author: Ye Ma."
@@ -27,6 +32,9 @@
 - slug: mycelium-mineral-panels
   title: "Toolpath-informed mycelium-mineral panels"
   years: "2025"
+  meta:
+    place: "Computational Tectonics Lab, UVA"
+    role: "Co-author, digital fabrication"
   tags: [fabrication, aec, robotics]
   role: "Co-author. Digital fabrication: implemented the three toolpath algorithms (Poisson-disk + TSP, Kangaroo, Hilbert), computed the predicted growth area, and printed the panels on the KUKA robot."
   credits: "With I. Datta and E. Baharlou (ACADIA 2025)."
@@ -40,6 +48,9 @@
 - slug: living-column
   title: "Living Column exhibition"
   years: "2025"
+  meta:
+    place: "Computational Tectonics Lab, UVA"
+    role: "Research assistant"
   tags: [aec, fabrication]
   role: "Research assistant: robotic printing of the column and, with I. Datta, installation of the display case."
   credits: "Created by Ehsan Baharlou; research assistants I. Datta and Y. Ma."
@@ -63,6 +74,9 @@
 - slug: clay-paste-extruder
   title: "Clay paste extruder commissioning"
   years: "2024"
+  meta:
+    place: "Computational Tectonics Lab, UVA"
+    role: "Graduate research assistant"
   tags: [robotics, fabrication]
   role: "Graduate research assistant. I set up the extruder, wiring and control, calibrated its speed, wrote the KUKA robot programs and ran the print trials."
   credits: "Clay recipe and process guidance from I. Datta and E. Baharlou."
@@ -74,6 +88,9 @@
 - slug: wood-hygroscopic-ml
   title: "Wood moisture bending: sensing and machine learning"
   years: "2024 - 2025"
+  meta:
+    place: "Computational Tectonics Lab, UVA"
+    role: "First author"
   tags: [cv, ml, aec]
   role: "First author. I built the humidity chamber, the camera-based curvature measurement, the dataset and the model comparison."
   credits: "With E. Baharlou (ARCC 2025)."
@@ -85,6 +102,9 @@
 - slug: heat-flux-test-box
   title: "Heat-flux test box for printed panels"
   years: "2025 - 2026"
+  meta:
+    place: "Computational Tectonics Lab, UVA"
+    role: "Test box and measurement design"
   tags: [aec, sensing]
   role: "Designed the test box and the measurement: heat-flux sensors and thermocouples with 24-bit acquisition on an Arduino, the logging code, and the test protocol following ASTM C1046 and C1155."
   credits: "With I. Datta and E. Baharlou."
@@ -106,6 +126,9 @@
 - slug: hsr-station-competitions
   title: "High-speed-rail station competitions"
   years: "2021 - 2022"
+  meta:
+    place: "Design firm, Shanghai"
+    role: "Architectural designer"
   tags: [aec, design]
   role: "Architectural designer at a design firm in Shanghai: concept design, station-area urban design and interior modeling; led the competition team for one station (Yinan, Shandong)."
   credits: "Firm team project."
@@ -117,6 +140,9 @@
 - slug: cs6501-3dcv-pointcloud-robustness
   title: "Point-cloud classifier robustness benchmark"
   years: "2026"
+  meta:
+    place: "CS 6501 course, UVA"
+    role: "Team project, phase 1"
   tags: [cv, 3d]
   status: draft
   role: "Phase 1 of a team project (CS 6501 3D Computer Vision): a benchmark of how missing geometry affects point-cloud classifiers."
@@ -129,6 +155,9 @@
 - slug: cs6501-fourier-net-registration
   title: "Fourier-Net deformable image registration"
   years: "2024"
+  meta:
+    place: "CS 6501 course, UVA"
+    role: "Team project: training and evaluation"
   tags: [cv, ml]
   status: draft
   role: "Application, training and evaluation of an existing model (from the original Fourier-Net authors), run on a university HPC cluster. I also wrote the introduction, background and conclusion."
