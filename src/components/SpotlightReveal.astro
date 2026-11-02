@@ -1,0 +1,142 @@
+---
+// Spotlight reveal: two pixel-aligned images stacked; a circular window in the
+// top one shows the image underneath. Plain CSS mask driven by --x / --y / --r,
+// moved by the pointer (desktop), a tap or horizontal drag (phones, the page
+// keeps vertical scrolling via touch-action: pan-y) or the arrow keys (the
+// stage is focusable). Left alone, the window drifts slowly; with
+// prefers-reduced-motion it stays put and follows input without easing.
+// Both images go through astro:assets (scaled and re-encoded only, never cropped).
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+interface Props {
+  top: ImageMetadata;
+  under: ImageMetadata;
+  topAlt: string;
+  underAlt: string;
+  /** small label next to the ring, naming what the window shows */
+  underLabel: string;
+  /** accessible name of the interactive stage */
+  label: string;
+  /** rendered width hint for srcset selection */
+  sizes?: string;
+  /** unique per page; prefixes the id of the usage hint */
+  id?: string;
+  class?: string;
+}
+const { top, under, topAlt, underAlt, underLabel, label, sizes = '(min-width: 48rem) 42rem, 100vw', id = 'spot', class: cls } = Astro.props;
+const hintId = `${id}-hint`;
+const widths = [480, 800, 1280].filter((w) => w <= top.width);
+const pic = { widths, sizes, formats: ['avif', 'webp'] as const, loading: 'lazy' as const, decoding: 'async' as const };
+---
+<div class:list={['spot', cls]}>
+  <div class="spot-stage" data-spotlight tabindex="0" role="group" aria-roledescription="spotlight viewer" aria-label={label} aria-describedby={hintId}>
+    <Picture src={under} alt={underAlt} {...pic} pictureAttributes={{ class: 'spot-layer' }} />
+    <Picture src={top} alt={topAlt} {...pic} pictureAttributes={{ class: 'spot-layer spot-top' }} />
+    <div class="spot-ring" aria-hidden="true"><span>{underLabel}</span></div>
+  </div>
+  <p id={hintId} class="spot-hint">
+    <span class="hint-fine">Move the pointer or use the arrow keys to move the window.</span>
+    <span class="hint-touch">Tap or drag sideways to move the window.</span>
+    <span class="spot-legend" aria-hidden="true">far <i></i> near</span>
+  </p>
+</div>
+
+<script>
+  const reduce = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (v: number) => Math.min(1, Math.max(0, v));
+
+  function mount(stage: HTMLElement) {
+    if (stage.dataset.ready) return;
+    stage.dataset.ready = '1';
+    // Target (tx, ty) and drawn (x, y) positions, as fractions of the stage.
+    let tx = 0.6, ty = 0.42, x = tx, y = ty, lastInput = -1e9, raf = 0, visible = false;
+
+    const draw = () => {
+      const w = stage.clientWidth;
+      stage.style.setProperty('--x', `${(x * 100).toFixed(2)}%`);
+      stage.style.setProperty('--y', `${(y * 100).toFixed(2)}%`);
+      stage.style.setProperty('--r', `${Math.max(48, Math.round(w * 0.15))}px`);
+      // Keep the ring label inside the frame: put it on the left once the ring is right of centre.
+      stage.toggleAttribute('data-flip', x > 0.5);
+    };
+    const tick = (t: number) => {
+      raf = 0;
+      if (!visible) return;
+      const still = reduce();
+      if (!still && t - lastInput > 2500) {
+        tx = 0.58 + 0.22 * Math.sin(t / 2600);
+        ty = 0.5 + 0.18 * Math.sin(t / 1700);
+      }
+      const k = still ? 1 : 0.18;
+      x += (tx - x) * k; y += (ty - y) * k;
+      draw();
+      // Keep running while drifting or easing; stop once settled under reduced motion.
+      if (!still || Math.abs(tx - x) + Math.abs(ty - y) > 1e-4) raf = requestAnimationFrame(tick);
+    };
+    const kick = () => { if (!raf && visible) raf = requestAnimationFrame(tick); };
+    const setTarget = (nx: number, ny: number) => { tx = clamp(nx); ty = clamp(ny); lastInput = performance.now(); kick(); };
+
+    const fromPointer = (e: PointerEvent) => {
+      const b = stage.getBoundingClientRect();
+      setTarget((e.clientX - b.left) / b.width, (e.clientY - b.top) / b.height);
+    };
+    stage.addEventListener('pointermove', (e) => {
+      // Mouse and pen follow on hover; touch follows only while the finger is down.
+      if (e.pointerType !== 'touch' || e.buttons) fromPointer(e);
+    });
+    stage.addEventListener('pointerdown', fromPointer);
+    stage.addEventListener('keydown', (e) => {
+      const step = e.shiftKey ? 0.1 : 0.04;
+      const d: Record<string, [number, number]> = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] };
+      const m = d[e.key];
+      if (!m) return;
+      e.preventDefault();
+      setTarget(tx + m[0], ty + m[1]);
+    });
+
+    // Run only while the stage is on screen (inside a closed dialog it is not).
+    new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible) { draw(); kick(); } }).observe(stage);
+    new ResizeObserver(draw).observe(stage);
+    draw();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-spotlight]').forEach(mount);
+</script>
+
+<style>
+  .spot { display: grid; gap: .6rem; }
+  .spot-stage {
+    position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 6px; background: var(--surface);
+    cursor: crosshair; touch-action: pan-y; -webkit-user-select: none; user-select: none;
+    --x: 60%; --y: 42%; --r: 96px;
+  }
+  .spot-stage :global(.spot-layer) { position: absolute; inset: 0; display: block; }
+  .spot-stage :global(.spot-layer img) { width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
+  /* The top image is cut away inside the circle, showing the image underneath. */
+  .spot-stage :global(.spot-top) {
+    -webkit-mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), transparent 0, transparent 90%, #000 100%);
+            mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), transparent 0, transparent 90%, #000 100%);
+  }
+  .spot-ring {
+    position: absolute; left: var(--x); top: var(--y); width: calc(var(--r) * 2); height: calc(var(--r) * 2);
+    transform: translate(-50%, -50%); border: 1px solid var(--gold); border-radius: 50%; pointer-events: none;
+  }
+  /* Cross-hair at the centre. */
+  .spot-ring::before {
+    content: ''; position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; transform: translate(-50%, -50%);
+    background: linear-gradient(var(--gold), var(--gold)) center / 1px 100% no-repeat, linear-gradient(var(--gold), var(--gold)) center / 100% 1px no-repeat;
+  }
+  .spot-ring span {
+    position: absolute; left: 100%; top: 50%; margin-left: 10px; transform: translateY(-50%); white-space: nowrap;
+    font-size: .75rem; font-weight: 600; font-variation-settings: 'wdth' 85; color: var(--gold); text-shadow: 0 0 6px #000, 0 0 2px #000;
+  }
+  .spot-stage[data-flip] .spot-ring span { left: auto; right: 100%; margin: 0 10px 0 0; }
+  .spot-stage:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .spot-hint { margin: 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: .4rem 1rem; color: var(--muted); font-size: .875rem; }
+  .hint-touch { display: none; }
+  @media (hover: none) { .hint-fine { display: none; } .hint-touch { display: inline; } }
+  .spot-legend { display: inline-flex; align-items: center; gap: .5rem; font-variation-settings: 'wdth' 85; }
+  /* Turbo colour map, the one the disparity image uses (far = blue, near = red). */
+  .spot-legend i { display: block; width: 96px; height: 6px; border-radius: 3px;
+    background: linear-gradient(90deg, #30123b, #4662d7, #36aaf9, #1ae4b6, #72fe5e, #c8ef34, #faba39, #f66b19, #ca2a04, #7a0403); }
+</style>

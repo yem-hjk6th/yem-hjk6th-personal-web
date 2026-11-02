@@ -2,6 +2,9 @@
 // The homepage (chosen variant 3): variant 1's "Print bed" layout with
 // React Bits interactions, on the dark theme from styles/theme.css.
 import MediaFrame from './MediaFrame.astro';
+import SpotlightReveal from './SpotlightReveal.astro';
+import stereoLeft from '../assets/stereo/left.jpg';
+import stereoDisp from '../assets/stereo/disp.jpg';
 import {
   profile, projects, publications, presentations, exhibitions, experience,
   audiences, audiencesFor, tagLabel, firstSentence, contactLinks,
@@ -157,14 +160,17 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
 
   <dialog id="float-win" class="win" aria-labelledby="win-title">
     <div class="win-bar" data-drag>
-      <h2 id="win-title" class="win-title">Window preview</h2>
+      <h2 id="win-title" class="win-title">Stereo depth</h2>
       <button type="button" class="win-close" data-close autofocus>
         <span aria-hidden="true">×</span><span class="sr-only">Close window</span>
       </button>
     </div>
     <div class="win-body">
-      <canvas class="win-canvas" role="img" aria-label="Placeholder animation: a Hilbert-curve toolpath printed bead by bead"></canvas>
-      <p class="win-note">Placeholder animation. What this window shows is still to be decided.</p>
+      <SpotlightReveal id="win-spot" top={stereoLeft} under={stereoDisp}
+        topAlt="ZED stereo camera, left frame: the pellet extruder nozzle above the print bed, next to small printed square rings"
+        underAlt="Fast-FoundationStereo disparity map of the same frame, coloured from blue (far) to red (near)"
+        underLabel="FFS disparity" label="Stereo depth viewer: camera frame with a movable window onto its disparity map" />
+      <p class="win-note">ZED left frame over its Fast-FoundationStereo disparity map.</p>
     </div>
   </dialog>
 </div>
@@ -215,7 +221,7 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
 
   /* Floating window: blue/grey chrome, black body. */
   .win { padding: 0; border: 1px solid var(--blue); border-radius: 8px; background: var(--bg); color: var(--ink);
-    width: min(28rem, calc(100vw - 2rem)); max-height: calc(100svh - 2rem); overflow: hidden;
+    width: min(44rem, calc(100vw - 2rem)); max-height: calc(100svh - 2rem); overflow: hidden;
     box-shadow: 0 0 0 1px #000, 0 24px 60px rgba(0,0,0,.6); }
   .win[data-moved] { margin: 0; right: auto; bottom: auto; }
   .win::backdrop { background: rgba(0, 0, 0, .55); }
@@ -227,8 +233,7 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
     background: transparent; color: var(--ink); border: 1px solid #3C3C3C; }
   .win-close:hover { border-color: var(--gold); color: var(--gold); }
   .win-body { padding: 1rem; display: grid; gap: .75rem; }
-  .win-canvas { width: 100%; aspect-ratio: 16 / 10; display: block; }
-  .win-note { margin: 0; color: var(--muted); font-size: .9375rem; }
+  .win-note { margin: 0; color: var(--ink); font-size: .9375rem; }
   .affil { margin: 1rem 0 0; font-size: clamp(1rem, 1.6vw, 1.25rem); color: var(--muted); font-variation-settings: 'wdth' 92; }
 
   .entries { position: relative; display: grid; grid-template-columns: 1fr; border-top: 3px solid var(--ink); }
