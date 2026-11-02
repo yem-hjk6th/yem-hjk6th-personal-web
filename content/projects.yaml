@@ -41,6 +41,7 @@
   problem: "Printed mineral panels can host mycelium growth, and the printed path shapes how much surface the fungus can colonize."
   what_i_did: "The paper compares three toolpath strategies (Poisson-disk sampling with a travelling-salesman route, Kangaroo physics, and a recursive Hilbert curve) for robotically printed 400 x 400 mm oyster-shell mineral panels."
   result: "The Hilbert pattern gave the largest predicted mycelium growth area (44.6% versus 27.9-34.8%)."
+  publications: [datta-2025-acadia]
   links:
     - label: "ACADIA 2025 paper"
       url: "https://doi.org/10.52842/conf.acadia.2025.2.170"
@@ -97,6 +98,7 @@
   problem: "Wood layers bend as moisture changes. Predicting the bending from measurements would help designers use it."
   what_i_did: "Built an Arduino humidity chamber and a Raspberry Pi webcam pipeline (OpenCV edge and Hough analysis) to measure curvature of wood bilayer samples, then compared regression models against an analytical baseline."
   result: null
+  publications: [ma-2025-arcc]
   links: []
   media: []
 - slug: heat-flux-test-box

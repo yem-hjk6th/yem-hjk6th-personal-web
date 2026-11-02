@@ -26,7 +26,7 @@ interface Props {
 const { top, under, topAlt, underAlt, underLabel, label, sizes = '(min-width: 48rem) 42rem, 100vw', id = 'spot', class: cls } = Astro.props;
 const hintId = `${id}-hint`;
 const widths = [480, 800, 1280].filter((w) => w <= top.width);
-const pic = { widths, sizes, formats: ['avif', 'webp'] as const, loading: 'lazy' as const, decoding: 'async' as const };
+const pic = { widths, sizes, formats: ['avif', 'webp'] as ('avif' | 'webp')[], loading: 'lazy' as const, decoding: 'async' as const };
 ---
 <div class:list={['spot', cls]}>
   <div class="spot-stage" data-spotlight tabindex="0" role="group" aria-roledescription="spotlight viewer" aria-label={label} aria-describedby={hintId}>

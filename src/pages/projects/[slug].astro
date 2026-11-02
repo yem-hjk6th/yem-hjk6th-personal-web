@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import MediaFrame from '../../components/MediaFrame.astro';
 import Video from '../../components/Video.astro';
-import { projects, tagLabel, type Project } from '../../lib/content';
+import { projects, publicationsFor, tagLabel, type Project } from '../../lib/content';
 import { resolveImage, resolveVideo } from '../../lib/media';
 import '../../styles/theme.css';
 
@@ -18,7 +18,13 @@ const sections = [
   { id: 'what-i-did', h: 'What I did', body: p.what_i_did },
   { id: 'result', h: 'Result', body: p.result },
 ].filter((s) => s.body || import.meta.env.DEV);
-const toc = [...sections, { id: 'role', h: 'Role' }, { id: 'credits', h: 'Credits' }, { id: 'links', h: 'Links' }];
+const papers = publicationsFor(p);
+const paperLink = (x: (typeof papers)[number]) => x.url ?? (x.doi ? `https://doi.org/${x.doi}` : null);
+const toc = [
+  ...sections, { id: 'role', h: 'Role' }, { id: 'credits', h: 'Credits' },
+  ...(papers.length ? [{ id: 'publication', h: papers.length > 1 ? 'Publications' : 'Publication' }] : []),
+  { id: 'links', h: 'Links' },
+];
 const images = (p.media.images ?? []).map((m) => resolveImage(m, p.slug)!);
 const [lead, ...rest] = images;
 const video = resolveVideo(p.media.video, p.slug);
@@ -61,6 +67,17 @@ const video = resolveVideo(p.media.video, p.slug);
         <h2>Credits</h2>
         <p>{p.credits}</p>
       </section>
+      {papers.length > 0 && (
+        <section id="publication">
+          <h2>{papers.length > 1 ? 'Publications' : 'Publication'}</h2>
+          <ul class="papers">
+            {papers.map((x) => {
+              const href = paperLink(x);
+              return <li><span class="paper-title">{href ? <a href={href} rel="noopener">{x.title}</a> : x.title}</span> <span class="paper-cite">{x.authors} ({x.year}). {x.venue}.</span></li>;
+            })}
+          </ul>
+        </section>
+      )}
       <section id="links">
         <h2>Links</h2>
         {p.links.length ? (
@@ -118,6 +135,9 @@ const video = resolveVideo(p.media.video, p.slug);
   h2 { font-size: 1rem; font-weight: 700; margin: 0 0 .4rem; font-variation-settings: 'wdth' 100; }
   section ul { margin: 0; padding-left: 1.1rem; }
   .none { color: var(--muted); }
+  .papers { list-style: none; padding: 0; display: grid; gap: .75rem; max-width: 66ch; }
+  .paper-title { font-weight: 650; }
+  .paper-cite { display: block; color: var(--muted); }
   .gallery { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; }
   .video { margin: 0; }
   .video :global(video) { display: block; width: 100%; height: auto; border-radius: 10px; background: var(--surface); }

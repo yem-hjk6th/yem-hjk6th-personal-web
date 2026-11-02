@@ -17,6 +17,13 @@ All text comes from `content/*.yaml` (`profile`, `projects`, `publications`,
 YAML does not have (for example a project `result: null`), it shows a visible
 TODO label instead.
 
+`projects.yaml` and `publications.yaml` are content collections
+(`src/content.config.ts`): the build checks every entry against a schema and
+fails on a missing required field, a wrong type, an unknown key or a YAML
+syntax error. Each project carries a short `meta` (`place`, `role`) for the
+listing's metadata line, and may link papers with
+`publications: [<id>]`, using the `id` of an entry in `publications.yaml`.
+
 The hero scene is procedural three.js code (`src/scenes/`). No stock images or
 third-party models are used.
 

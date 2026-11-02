@@ -1,39 +1,19 @@
-// Loads the site text from content/*.yaml at build time.
-// All visible copy comes from these files; nothing here adds facts.
+// Loads the site text at build time. Projects and publications come from the
+// content collections (src/content.config.ts: content/*.yaml checked against
+// schemas); profile and experience are read from their YAML files directly.
+// All visible copy comes from content/*.yaml; nothing here adds facts.
 import fs from 'node:fs';
 import path from 'node:path';
 import { load as parseYaml } from 'js-yaml';
-import { normalizeMedia, type Media } from './media';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import type { Media } from './media';
 
 const dir = path.resolve(process.cwd(), 'content');
 const load = <T>(name: string): T => parseYaml(fs.readFileSync(path.join(dir, name), 'utf8')) as T;
 
-export interface Link { label: string; url: string }
-export interface Project {
-  slug: string;
-  title: string;
-  years: string;
-  /** one-line summary for listings: where the work was done and my role, in a few words */
-  meta: { place?: string; role: string };
-  tags: string[];
-  status?: 'draft';
-  role: string;
-  credits: string;
-  problem: string;
-  what_i_did: string;
-  result: string | null;
-  links: Link[];
-  media: Media;
-}
-export interface Publication {
-  type: string;
-  authors: string;
-  year: number;
-  title: string;
-  venue: string;
-  doi?: string | null;
-  url?: string;
-}
+export type Link = CollectionEntry<'projects'>['data']['links'][number];
+export type Project = Omit<CollectionEntry<'projects'>['data'], 'media'> & { media: Media };
+export type Publication = CollectionEntry<'publications'>['data'];
 export interface Experience { role: string; org: string; location?: string; years?: string; summary: string }
 export interface Profile {
   name: string;
@@ -44,19 +24,23 @@ export interface Profile {
   contact: { email: string; linkedin: string; github: string; orcid: string };
   education: { degree: string; school: string; years: string; detail?: string }[];
 }
-interface PublicationsFile {
-  publications: Publication[];
-  presentations: { title: string; venue: string; year: number }[];
-  exhibitions: { title: string; venue: string; year: number }[];
-}
+type Name = 'projects' | 'publications' | 'presentations' | 'exhibitions';
+const entries = async <C extends Name>(c: C): Promise<CollectionEntry<C>['data'][]> => {
+  const list = (await getCollection(c)).map((e) => e.data as CollectionEntry<C>['data']).sort((x, y) => x.order - y.order);
+  if (!list.length) throw new Error(`content: no ${c} loaded; check the YAML file`);
+  return list;
+};
 
 export const profile = load<Profile>('profile.yaml');
-export const projects = load<Project[]>('projects.yaml').map((p) => ({ ...p, media: normalizeMedia(p.media, p.slug) }));
+export const projects = (await entries('projects')) as Project[];
 export const experience = load<Experience[]>('experience.yaml');
-const pubs = load<PublicationsFile>('publications.yaml');
-export const publications = pubs.publications;
-export const presentations = pubs.presentations;
-export const exhibitions = pubs.exhibitions;
+export const publications = await entries('publications');
+export const presentations = await entries('presentations');
+export const exhibitions = await entries('exhibitions');
+
+/** Publications a project links to (`publications:` in projects.yaml), in that order. */
+export const publicationsFor = (p: Project) =>
+  (p.publications ?? []).map((r) => publications.find((x) => x.id === r.id)!);
 
 // Audience entries. A project belongs to an audience if it carries any of its tags,
 // so cross-over work (e.g. robotics + fabrication) shows up for both readers.

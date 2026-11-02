@@ -53,13 +53,6 @@ const FOCUS = /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/;
 /** Raster image (or video poster) by its path under src/assets/media/. */
 export const rasterAsset = (src: string): ImageMetadata | null => raster[PREFIX + src] ?? null;
 
-/** projects.yaml may write `media: []` for "no media yet". */
-export function normalizeMedia(raw: unknown, slug: string): Media {
-  if (raw == null || (Array.isArray(raw) && raw.length === 0)) return {};
-  if (Array.isArray(raw) || typeof raw !== 'object') throw new Error(`${slug}: media must be [] or { thumbnail, images, video }`);
-  return raw as Media;
-}
-
 export function resolveImage(img: MediaImage | undefined, slug: string): ResolvedImage | null {
   if (!img) return null;
   if (!img.src || !img.alt) throw new Error(`${slug}: every media image needs src and alt`);
