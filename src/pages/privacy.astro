@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import '../styles/theme.css';
+---
+<Base title="Privacy" description="Privacy notice for yem.sh and the owner's personal backup tool." noindex>
+  <header class="wrap top">
+    <a href="/">Back to home</a>
+  </header>
+  <main id="main" class="wrap privacy">
+    <h1>Privacy</h1>
+    <h2>This website</h2>
+    <p>yem.sh is a static site hosted on GitHub Pages. It sets no cookies and runs no analytics or tracking. GitHub may keep standard server logs; see GitHub's privacy statement.</p>
+    <h2>rclone-ant (Google Drive backup)</h2>
+    <p>rclone-ant is a personal tool used only by the site owner to back up the owner's own data files to the owner's own Google Drive. It requests only the <code>drive.file</code> scope, so it can see and change only the files it creates itself. It does not collect, sell or share any data, and no one other than the owner uses it.</p>
+    <p class="updated">Last updated 2026-11-19.</p>
+  </main>
+</Base>
+
+<style>
+  .top { padding-block: 1.25rem; }
+  .privacy { padding-bottom: 5rem; max-width: 46rem; }
+  h1 { font-variation-settings: 'wdth' 110; font-weight: 750; font-size: clamp(2rem, 5.5vw, 3.6rem); line-height: 1.04; letter-spacing: -.012em; margin: 1.5rem 0 2rem; }
+  h2 { font-size: 1.25rem; margin: 2rem 0 .5rem; }
+  .updated { color: var(--muted); margin-top: 2.5rem; font-size: .9375rem; }
+</style>
