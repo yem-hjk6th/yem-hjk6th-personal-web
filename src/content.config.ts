@@ -46,6 +46,19 @@ const mediaVideo = z.object({
   credit: text.optional(),
 }).strict();
 
+// Optional illustrated sections on a project page, shown between "What I did" and "Result".
+// `narrow_src` is a second drawing for phones (art direction, e.g. a portrait layout);
+// both files are only scaled down and re-encoded.
+const storyImage = mediaImage.extend({ narrow_src: text.optional() }).strict();
+const storySection = z.object({
+  id: z.string().regex(/^[a-z0-9-]+$/),
+  heading: text,
+  body: text,
+  images: z.array(storyImage).optional(),
+  videos: z.array(mediaVideo).optional(),
+  link: z.object({ label: text, url: z.string().regex(/^(\/|https:\/\/)/, 'link url must start with / or https://') }).strict().optional(),
+}).strict();
+
 // `media: []` means "no media yet".
 const media = z.union([
   z.array(z.never()).max(0).transform(() => ({})),
@@ -67,6 +80,7 @@ const projects = defineCollection({
     credits: text,
     problem: text,
     what_i_did: text,
+    story: z.array(storySection).optional(),
     result: text.nullable(),
     publications: z.array(reference('publications')).optional(),
     links: z.array(z.object({ label: text, url: z.url() }).strict()),

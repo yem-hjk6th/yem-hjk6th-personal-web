@@ -1,0 +1,64 @@
+---
+// One figure in a project page's illustrated sections (`story:` in projects.yaml).
+// The whole image is shown at its own aspect ratio: no frame, no display crop or
+// zoom. Files are only scaled down and re-encoded (AVIF/WebP) by astro:assets.
+// `narrow` is an optional second file for phones (< 40rem), e.g. a portrait layout
+// of a wide drawing whose labels would be too small there. Wide images get an
+// "Open full size" link so their labels can be read at full resolution.
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { rasterAsset } from '../lib/media';
+interface Props {
+  slug: string;
+  src: string;
+  alt: string;
+  narrow?: string;
+  caption?: string;
+  credit?: string;
+}
+const { slug, src, alt, narrow, caption, credit } = Astro.props;
+const need = (p: string) => {
+  const a = rasterAsset(p);
+  if (!a) throw new Error(`${slug}: story image src/assets/media/${p} is not in the repo`);
+  return a;
+};
+const wide = need(src);
+const small = narrow ? need(narrow) : null;
+
+const srcset = async (a: ImageMetadata, widths: number[], format: 'avif' | 'webp') => {
+  const ws = [...new Set(widths.map((w) => Math.min(w, a.width)))];
+  const parts = await Promise.all(ws.map(async (w) => `${(await getImage({ src: a, width: w, format })).src} ${w}w`));
+  return parts.join(', ');
+};
+const portrait = wide.height > wide.width;
+const sizes = portrait ? '(min-width: 40rem) 22rem, 100vw' : '(min-width: 64rem) 44rem, 100vw';
+const PHONE = '(max-width: 40rem)';
+const WIDE_W = [640, 960, 1280, 1600];
+const SMALL_W = [400, 600, 800, 1200];
+const sources = [
+  ...(small ? (['avif', 'webp'] as const).map(async (f) => ({ media: PHONE, type: `image/${f}`, srcset: await srcset(small, SMALL_W, f), sizes: '100vw', w: small.width, h: small.height })) : []),
+  ...(['avif', 'webp'] as const).map(async (f) => ({ media: undefined, type: `image/${f}`, srcset: await srcset(wide, WIDE_W, f), sizes, w: wide.width, h: wide.height })),
+];
+const resolved = await Promise.all(sources);
+const fallback = await getImage({ src: wide, width: Math.min(1280, wide.width), format: 'jpg' });
+const full = portrait ? null : await getImage({ src: wide, width: wide.width, format: 'webp' });
+---
+<figure class:list={['story-fig', portrait ? 'portrait' : 'landscape']}>
+  <picture>
+    {resolved.map((s) => <source media={s.media} type={s.type} srcset={s.srcset} sizes={s.sizes} width={s.w} height={s.h} />)}
+    <img src={fallback.src} alt={alt} width={wide.width} height={wide.height} loading="lazy" decoding="async" />
+  </picture>
+  {(caption || credit || full) && (
+    <figcaption>
+      {caption}{caption && credit && ' '}{credit}
+      {full && <> <a class="full" href={full.src}>Open full size</a></>}
+    </figcaption>
+  )}
+</figure>
+<style>
+  .story-fig { margin: 0; min-width: 0; }
+  .story-fig img { display: block; width: 100%; height: auto; border-radius: 10px; background: var(--surface); }
+  .story-fig.portrait { max-width: 22rem; }
+  figcaption { margin-top: .75rem; color: var(--muted); font-size: .9375rem; max-width: 66ch; }
+  .full { white-space: nowrap; }
+</style>

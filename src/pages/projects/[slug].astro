@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import MediaFrame from '../../components/MediaFrame.astro';
+import StoryFigure from '../../components/StoryFigure.astro';
 import Video from '../../components/Video.astro';
 import { projects, publicationsFor, tagLabel, type Project } from '../../lib/content';
 import { resolveImage, resolveVideo } from '../../lib/media';
@@ -18,16 +19,31 @@ const sections = [
   { id: 'what-i-did', h: 'What I did', body: p.what_i_did },
   { id: 'result', h: 'Result', body: p.result },
 ].filter((s) => s.body || import.meta.env.DEV);
+// Illustrated sections (`story:`) go between "What I did" and "Result".
+const story = (p.story ?? []).map((s) => ({
+  ...s,
+  videos: (s.videos ?? []).map((v) => {
+    const r = resolveVideo(v, p.slug)!;
+    if (!r.url) throw new Error(`${p.slug}: story video ${r.path} is not in the repo`);
+    return r;
+  }),
+}));
+const before = sections.filter((s) => s.id !== 'result');
+const after = sections.filter((s) => s.id === 'result');
 const papers = publicationsFor(p);
 const paperLink = (x: (typeof papers)[number]) => x.url ?? (x.doi ? `https://doi.org/${x.doi}` : null);
 const toc = [
-  ...sections, { id: 'role', h: 'Role' }, { id: 'credits', h: 'Credits' },
+  ...before, ...story.map((s) => ({ id: s.id, h: s.heading })), ...after,
+  { id: 'role', h: 'Role' }, { id: 'credits', h: 'Credits' },
   ...(papers.length ? [{ id: 'publication', h: papers.length > 1 ? 'Publications' : 'Publication' }] : []),
   { id: 'links', h: 'Links' },
 ];
 const images = (p.media.images ?? []).map((m) => resolveImage(m, p.slug)!);
 const [lead, ...rest] = images;
 const video = resolveVideo(p.media.video, p.slug);
+// With no lead image, a project's video takes the lead slot instead of the gallery.
+const leadVideo = !lead && video?.url ? video : null;
+const caption = (v: { caption?: string; credit?: string }) => [v.caption, v.credit].filter(Boolean).join(' ');
 ---
 <Base title={p.title} description={p.problem}>
   <main id="main" class="wrap project">
@@ -50,10 +66,46 @@ const video = resolveVideo(p.media.video, p.slug);
     <div class="content">
       <div class="lead" transition:name={`media-${p.slug}`}>
         {lead ? <MediaFrame image={lead} slug={p.slug} size="large" />
+          : leadVideo ? (
+            <figure class="video">
+              <Video src={leadVideo.url!} poster={leadVideo.poster} width={leadVideo.poster?.width ?? 1280} height={leadVideo.poster?.height ?? 720}
+                label={leadVideo.caption ?? `Video for ${p.title}`} />
+              {caption(leadVideo) && <figcaption>{caption(leadVideo)}</figcaption>}
+            </figure>
+          )
           : !video && <MediaFrame image={null} slug={p.slug} size="large" />}
       </div>
 
-      {sections.map((s) => (
+      {before.map((s) => (
+        <section id={s.id}>
+          <h2>{s.h}</h2>
+          {s.body ? <p>{s.body}</p> : <p><span class="todo">TODO: {s.h.toLowerCase()} not yet written in projects.yaml</span></p>}
+        </section>
+      ))}
+      {story.map((s) => (
+        <section id={s.id} class="story">
+          <h2>{s.heading}</h2>
+          <p>{s.body}</p>
+          {s.images && s.images.length > 0 && (
+            <div class="figs">
+              {s.images.map((m) => <StoryFigure slug={p.slug} src={m.src} alt={m.alt} narrow={m.narrow_src} caption={m.caption} credit={m.credit} />)}
+            </div>
+          )}
+          {s.videos.length > 0 && (
+            <div class:list={['clips', s.videos.length > 1 && 'clips-multi']}>
+              {s.videos.map((v) => (
+                <figure class="video">
+                  <Video src={v.url!} poster={v.poster} width={v.poster?.width ?? 1280} height={v.poster?.height ?? 720}
+                    label={v.caption ?? `Video for ${p.title}`} />
+                  {caption(v) && <figcaption>{caption(v)}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          )}
+          {s.link && <p class="story-link"><a href={s.link.url}>{s.link.label}</a></p>}
+        </section>
+      ))}
+      {after.map((s) => (
         <section id={s.id}>
           <h2>{s.h}</h2>
           {s.body ? <p>{s.body}</p> : <p><span class="todo">TODO: {s.h.toLowerCase()} not yet written in projects.yaml</span></p>}
@@ -85,10 +137,10 @@ const video = resolveVideo(p.media.video, p.slug);
         ) : <p class="none">No public links yet.</p>}
       </section>
 
-      {(rest.length > 0 || video) && (
+      {(rest.length > 0 || (video && !leadVideo)) && (
         <div class="gallery">
           {rest.map((img) => <MediaFrame image={img} slug={p.slug} size="large" />)}
-          {video && (
+          {video && !leadVideo && (
             video.url ? (
               <figure class="video">
                 <Video src={video.url} poster={video.poster} width={video.poster?.width ?? 1280} height={video.poster?.height ?? 720}
@@ -142,6 +194,18 @@ const video = resolveVideo(p.media.video, p.slug);
   .video { margin: 0; }
   .video :global(video) { display: block; width: 100%; height: auto; border-radius: 10px; background: var(--surface); }
   .video figcaption { margin-top: .75rem; color: var(--muted); font-size: .9375rem; }
+  /* Illustrated sections: text first, then figures and clips. Two clips sit side by
+     side from 40rem; with an odd count the first one spans the row. */
+  .story { display: grid; gap: 1.25rem; }
+  .story > h2 { margin-bottom: -.85rem; }
+  .figs, .clips { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+  @media (min-width: 40rem) {
+    .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .figs > :global(.landscape) { grid-column: 1 / -1; }
+    .clips-multi { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .clips-multi > :first-child:nth-last-child(odd) { grid-column: 1 / -1; }
+  }
+  .story-link { font-weight: 600; }
   .next { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); display: grid; gap: .25rem; }
   .next span { color: var(--muted); font-size: .9375rem; }
   .next a { font-size: 1.375rem; font-weight: 650; }
