@@ -9,11 +9,33 @@
   credits: "Computational Tectonics Lab, University of Virginia; advisor Ehsan Baharlou."
   problem: "In robotic extrusion the robot slows at corners while the extruder keeps its commanded speed, so the deposited bead changes. The process is hard to observe while it runs."
   what_i_did: "Built the sensing and logging setup, ran printing experiments, calibrated the stereo camera to the robot, profiled depth accuracy against distance, and benchmarked deep-learning models for bead-width measurement. Then built a closed-loop controller: a camera reads the bead width while printing, and the PC adjusts the robot's speed override through RSI every few milliseconds."
+  story:
+    - id: print-head
+      heading: "The print head"
+      body: "A single-screw pellet extruder on a KUKA KR10 robot arm, with a 3D-printed cage that holds cameras and borescopes near the nozzle. The drawing cuts the extruder open to show the screw carrying pellets down to the nozzle. It was drawn from a 3D scan of the extruder, the vendor's CAD model and the cage CAD; the inside of the screw channels is schematic."
+      images:
+        - src: vision-guided-pellet-extrusion/head_site_site_labeled.png
+          narrow_src: vision-guided-pellet-extrusion/head_site_portrait.png
+          alt: "Drawing of the print head over the print bed: servo motor and gearbox on top, the pellet hopper and feed pipe, the extruder cut open to show the screw, and the printed sensor cage around the barrel holding cameras on tilted arms and borescopes beside the nozzle. A close-up shows the die exit, a borescope head, a camera's sight line and the fresh bead."
+          caption: "Drawing: the print head with its sensor cage. Gold marks the material, blue the cameras' sight lines."
+        - src: vision-guided-pellet-extrusion/photo_head_earlier_cage_on_robot.jpg
+          alt: "Photo of an earlier printed sensor cage, a clear plastic cylinder of rings and posts, around the extruder barrel above the nozzle"
+          caption: "An earlier version of the sensor cage on the extruder, October 2026."
+        - src: vision-guided-pellet-extrusion/photo_extruder_hopper_on_robot.jpg
+          alt: "Photo of the extruder on the orange robot arm: a clear tube full of white plastic pellets beside the black motor, with yellow and black cables"
+          caption: "The pellet tube, motor and wiring on the robot arm, October 2026."
+    - id: code
+      heading: "Code"
+      body: "The PC side of the loop is open source as a ROS 2 port, with a simulator of the robot controller and a replay of one logged print."
   result: "Closed-loop prints ran in 2026; results are in preparation."
   links:
     - label: "ROS 2 port of the closed-loop pipeline (code and a real session log)"
       url: "https://github.com/yem-hjk6th/RSI_proj_ROS"
-  media: []
+  media:
+    thumbnail:
+      src: vision-guided-pellet-extrusion/head_site_site.png
+      alt: "Drawing of the print head: a pellet extruder cut open to show the screw, inside a printed sensor cage with cameras and borescopes, over the print bed"
+      fit: contain
 - slug: rsi-proj-ros
   title: "ROS 2 port of a robot speed-override controller"
   years: "2026"
