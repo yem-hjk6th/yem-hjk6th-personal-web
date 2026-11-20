@@ -55,7 +55,6 @@
   title: "Toolpath-informed mycelium-mineral panels"
   years: "2025"
   meta:
-    place: "Computational Tectonics Lab, UVA"
     role: "Co-author, digital fabrication"
   tags: [fabrication, aec, robotics]
   role: "Co-author. Digital fabrication: implemented the three toolpath algorithms (Poisson-disk + TSP, Kangaroo, Hilbert), computed the predicted growth area, and printed the panels on the KUKA robot."
@@ -98,7 +97,6 @@
   title: "Clay paste extruder commissioning"
   years: "2024"
   meta:
-    place: "Computational Tectonics Lab, UVA"
     role: "Graduate research assistant"
   tags: [robotics, fabrication]
   role: "Graduate research assistant. I set up the extruder, wiring and control, calibrated its speed, wrote the KUKA robot programs and ran the print trials."
@@ -112,7 +110,6 @@
   title: "Wood moisture bending: sensing and machine learning"
   years: "2024 - 2025"
   meta:
-    place: "Computational Tectonics Lab, UVA"
     role: "First author"
   tags: [cv, ml, aec]
   role: "First author. I built the humidity chamber, the camera-based curvature measurement, the dataset and the model comparison."
@@ -127,7 +124,6 @@
   title: "Heat-flux test box for printed panels"
   years: "2025 - 2026"
   meta:
-    place: "Computational Tectonics Lab, UVA"
     role: "Test box and measurement design"
   tags: [aec, sensing]
   role: "Designed the test box and the measurement: heat-flux sensors and thermocouples with 24-bit acquisition on an Arduino, the logging code, and the test protocol following ASTM C1046 and C1155."
