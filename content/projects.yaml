@@ -115,11 +115,42 @@
   role: "First author. I built the humidity chamber, the camera-based curvature measurement, the dataset and the model comparison."
   credits: "With E. Baharlou (ARCC 2025)."
   problem: "Wood layers bend as moisture changes. Predicting the bending from measurements would help designers use it."
-  what_i_did: "Built an Arduino humidity chamber and a Raspberry Pi webcam pipeline (OpenCV edge and Hough analysis) to measure curvature of wood bilayer samples, then compared regression models against an analytical baseline."
-  result: null
+  what_i_did: "Fabricated 30 bilayer samples of quarter-sawn maple veneer laminated to glass-fiber fabric with epoxy (45 × 135 mm, with the maple layer thickness as the variable). Designed an Arduino-controlled acrylic chamber that conditions the samples at 90% relative humidity, and measured their curvature during exposure with a Raspberry Pi webcam and OpenCV (Canny edge detection and Hough circle fitting). Built the dataset with engineered features and benchmarked supervised regression models against the Timoshenko bilayer equation, tuning them by grid search with k-fold cross-validation and validating them on one held-out test sample."
+  result: "On the test sample, with a measured bending radius of 101 mm, CatBoost predicted 112 mm, the closest of the machine-learning models. Gaussian Process, the best model in cross-validation, did not generalize to that sample."
   publications: [ma-2025-arcc]
   links: []
-  media: []
+  story:
+    - id: humidity-chamber
+      heading: "Humidity chamber"
+      body: "Two Arduino Uno boards read two DHT22 humidity and temperature sensors every five seconds, time-stamp the readings with a DS3231 clock, show them on an OLED display, log them to an SD card, and switch two ultrasonic mist makers through a relay when humidity falls below 90%."
+      images:
+        - src: wood-hygroscopic-ml/chamber_circuit_uno.png
+          narrow_src: wood-hygroscopic-ml/chamber_circuit_uno_portrait.png
+          alt: "Illustrated wiring diagram of the chamber: two Arduino Uno boards side by side, with two DHT22 humidity and temperature sensors above them on shared sensor lines; board 1 drives a two-channel relay wired to two ultrasonic mist makers; board 2 connects to an OLED display, an SD card module and a DS3231 clock; a dashed ground line joins the two boards."
+          caption: "Circuit of the humidity chamber, redrawn from the original wiring sketch. Gold: sensor and clock lines; white: control and output lines; dashed: shared ground."
+        - src: wood-hygroscopic-ml/chamber_photo.jpg
+          alt: "Photo of the humidity chamber: a clear acrylic box on a white backdrop, with sensor wires taped along its top edge and down to humidity sensors inside, a mist-maker container in one corner, and the relay, Arduino boards and a lit OLED display on the table to its right."
+          caption: "The humidity chamber and its electronics, November 2023."
+    - id: comparing-models
+      heading: "Comparing models"
+      body: "One test sample, shown with the paper's five-feature set, passes through each model in turn; every clip ends on that model's prediction against the measured bending radius of 101 mm."
+      videos:
+        - src: wood-hygroscopic-ml/models_compare_v2.mp4
+          poster: wood-hygroscopic-ml/models_compare_v2_poster.jpg
+          caption: "How each model turns the test sample's measurements into a predicted curvature. Mechanisms are schematic; predictions are from the paper's validation table."
+      images:
+        - src: wood-hygroscopic-ml/models_overview.png
+          alt: "Ten small panels, one per model, each with a bar for predicted curvature next to a tick for the measured value, and a predicted arc next to the measured arc. Predicted radii: CatBoost 112 mm, XGBoost 117 mm, decision tree 471 mm, random forest 226 mm, linear 129 mm, ridge 129 mm, lasso 228 mm, Gaussian process not shown, MLP 26 mm, Timoshenko equation 123 mm; measured 101 mm."
+          caption: "Predictions for the test sample. Gold: predicted (validation table of the paper); blue: measured, R ≈ 101 mm."
+  media:
+    thumbnail:
+      src: wood-hygroscopic-ml/lead_radii_v4_poster.jpg
+      alt: "On black, six thin wood strips in clamps at the upper right, each with a gold arc and a dashed full circle around it; centre marks with radius lines lead down to labels from R ≈ 190 mm to R ≈ 320 mm."
+      fit: contain
+    video:
+      src: wood-hygroscopic-ml/lead_radii_v4.mp4
+      poster: wood-hygroscopic-ml/lead_radii_v4_poster.jpg
+      caption: "Six bilayer samples bending, 3.6 hours in 5 seconds: a circle is fitted to each strip in every frame, then the view pulls back to show the full circles and their radii. Drawn by code on a documentation camera's video; the radii are camera estimates, not the paper's measurements."
 - slug: heat-flux-test-box
   title: "Heat-flux test box for printed panels"
   years: "2025 - 2026"

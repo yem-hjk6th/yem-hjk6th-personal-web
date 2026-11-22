@@ -3,8 +3,8 @@
 // The whole image is shown at its own aspect ratio: no frame, no display crop or
 // zoom. Files are only scaled down and re-encoded (AVIF/WebP) by astro:assets.
 // `narrow` is an optional second file for phones (< 40rem), e.g. a portrait layout
-// of a wide drawing whose labels would be too small there. Wide images get an
-// "Open full size" link so their labels can be read at full resolution.
+// of a wide drawing whose labels would be too small there. Wide images wider than
+// 1600 px get an "Open full size" link so their labels can be read at full resolution.
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { rasterAsset } from '../lib/media';
@@ -41,7 +41,9 @@ const sources = [
 ];
 const resolved = await Promise.all(sources);
 const fallback = await getImage({ src: wide, width: Math.min(1280, wide.width), format: 'jpg' });
-const full = portrait ? null : await getImage({ src: wide, width: wide.width, format: 'webp' });
+// Full-size link only when the file is much larger than its display (44rem column, 2x screens ~1600 px):
+// a 1280 px chart already shows at full resolution, so the link would add nothing.
+const full = portrait || wide.width <= 1600 ? null : await getImage({ src: wide, width: wide.width, format: 'webp' });
 ---
 <figure class:list={['story-fig', portrait ? 'portrait' : 'landscape']}>
   <picture>
