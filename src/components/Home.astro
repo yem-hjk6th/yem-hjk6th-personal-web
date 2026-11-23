@@ -3,8 +3,7 @@
 // React Bits interactions, on the dark theme from styles/theme.css.
 import MediaFrame from './MediaFrame.astro';
 import SpotlightReveal from './SpotlightReveal.astro';
-import Video from './Video.astro';
-import heroStill from '../assets/media/hero/rsi_pixel_story_still.png';
+import HeroCanvas from './HeroCanvas.astro';
 import stereoLeft from '../assets/stereo/left.jpg';
 import stereoDisp from '../assets/stereo/disp.jpg';
 import {
@@ -37,10 +36,7 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
 
   <main id="main">
     <section class="hero" id="top" aria-labelledby="name">
-      <div class="stage">
-        <Video id="hero-video" src="/media/hero/rsi_pixel_story.mp4" poster={heroStill} posterFormat="png" width={1280} height={720}
-          label="Pixel animation in three scenes: a robot prints while four sensors (robot telemetry, a stereo camera, a bead camera and a nozzle borescope) send data; the view steps out to a lab monitor that builds a live 3D reconstruction of the print; then a large robot arm prints a ship hull." />
-      </div>
+      <HeroCanvas label="Animated line drawing: a robot arm on a rail prints a row of curved shells while a stereo camera scans each fresh layer." />
       <div class="hero-text">
         <h1 id="name" class="name">
           <button type="button" class="name-btn" aria-haspopup="dialog" aria-controls="float-win">
@@ -217,14 +213,12 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   .bar a:hover { color: var(--gold); text-decoration: underline; text-decoration-thickness: 3px; }
 
   /* Hero */
-  .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: 1fr auto auto; padding: 5rem var(--pad) 0;
+  .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: 1fr auto auto; padding: 5rem var(--pad) 0; overflow: hidden;
     background: repeating-linear-gradient(to bottom, transparent 0 7px, color-mix(in srgb, var(--bg), #FFFFFF 5%) 7px 8px); }
-  /* Pixel story: a 1280 x 720 video of 320 x 180 pixel art, letterboxed at 16:9.
-     lighten lets its black background show the hero's layer-line texture. */
-  /* Pinned to the top right and kept short enough that scene 2's full-frame room clears the name below it. */
-  .stage { position: absolute; top: 4rem; right: var(--pad); width: 52%; height: max(14rem, calc(100svh - 34rem)); pointer-events: none; }
-  .stage :global(video) { width: 100%; height: 100%; object-fit: contain; object-position: right top; image-rendering: pixelated; image-rendering: crisp-edges; mix-blend-mode: lighten; }
-  .hero-text { position: relative; align-self: end; padding-bottom: 2rem; }
+  /* HeroCanvas: a live line drawing filling the whole hero behind the text (candidates ?hero=a|b|c, old pixel
+     story ?hero=old). The canvas is transparent, so the layer-line texture shows through; the key action sits
+     right of (or above) the name, and soft scrims keep the text at >= 11:1. */
+  .hero-text { position: relative; z-index: 1; align-self: end; padding-bottom: 2rem; }
   .name { font-size: clamp(3.6rem, 13vw, 11.5rem); line-height: .86; font-weight: 820; letter-spacing: -.02em;
     font-variation-settings: 'wdth' 125; margin-left: -.04em; }
   .name :global(.variable-proximity) { font-family: inherit; }
@@ -338,8 +332,8 @@ const pubLink = (p: (typeof publications)[number]) => p.url ?? (p.doi ? `https:/
   @media (max-width: 30rem) { .contact-list li { grid-template-columns: 1fr; gap: .1rem; } }
 
   @media (max-width: 47.99rem) {
-    .stage { top: 3.5rem; left: 0; right: 0; width: 100%; height: 56.25vw; }
+    /* The canvas still fills the hero; the name drops low enough to leave the animation's key action room above it. */
     .hero { padding-top: 3.5rem; grid-template-rows: auto auto; min-height: 0; }
-    .hero-text { padding: calc(56.25vw + 1.25rem) 0 1.5rem; }
+    .hero-text { padding: clamp(13rem, 64vw, 24rem) 0 1.5rem; }
   }
 </style>

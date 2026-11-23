@@ -1,0 +1,48 @@
+---
+// Full-bleed live animation behind the hero text. Without JS the hero keeps its plain background.
+// Candidates (W21, 2026-11-22), chosen with ?hero=a|b|c; ?hero=old keeps the W20 pixel story.
+//   a  "Drawn in light"          scripts/hero/scene_a.js   (vector, scripts/hero/vplayer.js)
+//   b  "Cloud, path, object"     scripts/hero/scene_b.js
+//   c  "Vault to column"         scripts/hero/scene_c.js
+//   old  pixel story              scripts/hero/{player,scenes,pixel}.js
+// Each scene loads on demand, so a visitor downloads only the one that plays.
+interface Props {
+  /** what the animation shows (it has no sound); a vector scene replaces it with its own description */
+  label: string;
+}
+const { label } = Astro.props;
+---
+<div class="hero-art">
+  <canvas class="hero-canvas" role="img" aria-label={label}></canvas>
+</div>
+
+<script>
+  import { onPageLoad } from '../scripts/lifecycle';
+  const DEFAULT = 'a';
+  const SCENES: Record<string, () => Promise<any>> = {
+    a: () => import('../scripts/hero/scene_a.js'),
+    b: () => import('../scripts/hero/scene_b.js'),
+    c: () => import('../scripts/hero/scene_c.js'),
+  };
+  onPageLoad(() => {
+    const c = document.querySelector<HTMLCanvasElement>('.hero-canvas');
+    if (!c) return;
+    let unmount = () => {};
+    let gone = false;
+    document.addEventListener('astro:before-swap', () => { gone = true; unmount(); }, { once: true });
+    const q = new URLSearchParams(location.search).get('hero');
+    if (q === 'old') {
+      import('../scripts/hero/player.js').then(({ mountHero }) => { if (!gone) unmount = mountHero(c); });
+      return;
+    }
+    const key = q && SCENES[q] ? q : DEFAULT;
+    Promise.all([import('../scripts/hero/vplayer.js'), SCENES[key]()]).then(([{ mountVector }, scene]) => {
+      if (!gone) unmount = mountVector(c, scene);
+    });
+  });
+</script>
+
+<style>
+  .hero-art { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .hero-canvas { position: absolute; left: 0; top: 0; display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
+</style>

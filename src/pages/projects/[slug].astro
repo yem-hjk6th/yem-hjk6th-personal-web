@@ -4,7 +4,7 @@ import MediaFrame from '../../components/MediaFrame.astro';
 import StoryFigure from '../../components/StoryFigure.astro';
 import Video from '../../components/Video.astro';
 import { projects, publicationsFor, tagLabel, type Project } from '../../lib/content';
-import { resolveImage, resolveVideo } from '../../lib/media';
+import { resolveAudio, resolveImage, resolveVideo } from '../../lib/media';
 import '../../styles/theme.css';
 
 export function getStaticPaths() {
@@ -13,13 +13,13 @@ export function getStaticPaths() {
 const { project: p } = Astro.props as { project: Project };
 const i = projects.findIndex((x) => x.slug === p.slug);
 const next = projects[(i + 1) % projects.length];
-// TODO labels show on the dev server only; the public build skips empty sections.
+// TODO labels show on the dev server only (not for Result); the public build skips empty sections.
 const sections = [
   { id: 'problem', h: 'Problem', body: p.problem },
-  { id: 'what-i-did', h: 'What I did', body: p.what_i_did },
+  { id: 'approach', h: 'Approach', body: p.what_i_did },
   { id: 'result', h: 'Result', body: p.result },
-].filter((s) => s.body || import.meta.env.DEV);
-// Illustrated sections (`story:`) go between "What I did" and "Result".
+].filter((s) => s.body || (import.meta.env.DEV && s.id !== 'result')); // Ye 11-22: no result to write -> no Result section, dev included
+// Illustrated sections (`story:`) go between "Approach" and "Result".
 const story = (p.story ?? []).map((s) => ({
   ...s,
   videos: (s.videos ?? []).map((v) => {
@@ -27,6 +27,7 @@ const story = (p.story ?? []).map((s) => ({
     if (!r.url) throw new Error(`${p.slug}: story video ${r.path} is not in the repo`);
     return r;
   }),
+  audios: (s.audios ?? []).map((a) => resolveAudio(a, p.slug)),
 }));
 const before = sections.filter((s) => s.id !== 'result');
 const after = sections.filter((s) => s.id === 'result');
@@ -98,6 +99,17 @@ const caption = (v: { caption?: string; credit?: string }) => [v.caption, v.cred
                   <Video src={v.url!} poster={v.poster} width={v.poster?.width ?? 1280} height={v.poster?.height ?? 720}
                     label={v.caption ?? `Video for ${p.title}`} />
                   {caption(v) && <figcaption>{caption(v)}</figcaption>}
+                </figure>
+              ))}
+            </div>
+          )}
+          {s.audios.length > 0 && (
+            <div class="audios">
+              {s.audios.map((a) => (
+                <figure class="audio">
+                  <figcaption>{a.label}</figcaption>
+                  <audio controls preload="none" src={a.url}></audio>
+                  {a.caption && <p class="audio-note">{a.caption}</p>}
                 </figure>
               ))}
             </div>
@@ -206,6 +218,10 @@ const caption = (v: { caption?: string; credit?: string }) => [v.caption, v.cred
     .clips-multi > :first-child:nth-last-child(odd) { grid-column: 1 / -1; }
   }
   .story-link { font-weight: 600; }
+  .audios { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem 1.5rem; margin-top: 1.5rem; }
+  .audio figcaption { font-size: .9375rem; margin-bottom: .4rem; }
+  .audio audio { width: 100%; color-scheme: dark; }
+  .audio-note { margin-top: .4rem; color: var(--muted); font-size: .875rem; }
   .next { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); display: grid; gap: .25rem; }
   .next span { color: var(--muted); font-size: .9375rem; }
   .next a { font-size: 1.375rem; font-weight: 650; }

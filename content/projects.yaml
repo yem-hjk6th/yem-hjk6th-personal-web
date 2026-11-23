@@ -1,5 +1,5 @@
 - slug: vision-guided-pellet-extrusion
-  title: "Robot telemetry and vision for pellet extrusion"
+  title: "Vision-controlled closed-loop robotic additive manufacturing"
   years: "2025 - present"
   meta:
     place: "Computational Tectonics Lab, UVA"
@@ -18,12 +18,26 @@
           narrow_src: vision-guided-pellet-extrusion/head_site_portrait.png
           alt: "Drawing of the print head over the print bed: servo motor and gearbox on top, the pellet hopper and feed pipe, the extruder cut open to show the screw, and the printed sensor cage around the barrel holding cameras on tilted arms and borescopes beside the nozzle. A close-up shows the die exit, a borescope head, a camera's sight line and the fresh bead."
           caption: "Drawing: the print head with its sensor cage. Gold marks the material, blue the cameras' sight lines."
-        - src: vision-guided-pellet-extrusion/photo_head_earlier_cage_on_robot.jpg
-          alt: "Photo of an earlier printed sensor cage, a clear plastic cylinder of rings and posts, around the extruder barrel above the nozzle"
-          caption: "An earlier version of the sensor cage on the extruder, October 2026."
-        - src: vision-guided-pellet-extrusion/photo_extruder_hopper_on_robot.jpg
-          alt: "Photo of the extruder on the orange robot arm: a clear tube full of white plastic pellets beside the black motor, with yellow and black cables"
-          caption: "The pellet tube, motor and wiring on the robot arm, October 2026."
+    - id: cl-print
+      heading: "A closed-loop print, and which pair steers"
+      body: "A closed-loop print on the four-pair cage, six times faster, through the four cameras; the lit border marks the pair whose reading steers the speed. Along the path, each segment is coloured by the pair in control, and the radar shows the same by travel heading. Held: the last speed is kept while no reading is valid; open: the preset speed is used."
+      videos:
+        - src: vision-guided-pellet-extrusion/vision_cl_print_fast.mp4
+          poster: vision-guided-pellet-extrusion/vision_cl_print_fast_poster.jpg
+          caption: "A closed-loop print on the KUKA KR10 with the four-pair cage, November 2026, shown six times faster through the four cameras."
+        - src: vision-guided-pellet-extrusion/vision_cl_control_map.mp4
+          poster: vision-guided-pellet-extrusion/vision_cl_control_map_poster.jpg
+          caption: "The same print: path segments coloured by the pair in control, and a radar of control by travel heading, from the print's controller log."
+    - id: closed-loop
+      heading: "Sensing and closed loop (in progress)"
+      body: "A sensor cage around the nozzle carries four pairs, each a borescope and an ELP camera, placed ninety degrees apart so that one pair trails the nozzle whatever the travel direction. Learned readers turn each image into a bead width, and the speed command follows a width law with a gated correction every quarter second. Ideas under study include fusing the views of several pairs and starting every reader from a pretrained vision backbone. The work is in progress and unpublished."
+      videos:
+        - src: vision-guided-pellet-extrusion/vision_cl_sensing_v2.mp4
+          poster: vision-guided-pellet-extrusion/vision_cl_sensing_v2_poster.jpg
+          caption: "Open loop, then the four borescope and ELP pairs around the nozzle; each pair leads over a 90-degree range of travel direction (schematic)."
+        - src: vision-guided-pellet-extrusion/vision_cl_architecture_v3.mp4
+          poster: vision-guided-pellet-extrusion/vision_cl_architecture_v3_poster.jpg
+          caption: "Reader and controller architecture; the fusion and pretrained-backbone ideas are in progress (schematic)."
     - id: code
       heading: "Code"
       body: "The PC side of the loop is open source as a ROS 2 port, with a simulator of the robot controller and a replay of one logged print."
@@ -36,23 +50,12 @@
       src: vision-guided-pellet-extrusion/head_site_site.png
       alt: "Drawing of the print head: a pellet extruder cut open to show the screw, inside a printed sensor cage with cameras and borescopes, over the print bed"
       fit: contain
-- slug: rsi-proj-ros
-  title: "ROS 2 port of a robot speed-override controller"
-  years: "2026"
-  meta:
-    role: "Author"
-  tags: [robotics, software]
-  role: "Author. Implemented with Claude Code (AI coding assistant)."
-  credits: "Repository author: Ye Ma."
-  problem: "A lab pipeline that controls a KUKA robot's speed in real time ran as Windows scripts. To share it and reuse it on another robot, it needed a tested, documented code base."
-  what_i_did: "Ported the pipeline to ROS 2 (Jazzy): an RSI bridge with a 4 ms reply loop in its own process, the control law, the camera width readout, an EthernetKRL bridge for a robot without RSI, session recording with rosbag2, and a replay of a real print that checks the port against the original logs. Safety rules (no path correction, override clamp, watchdog ramp) are enforced in code and tested in CI."
-  result: "In a lock-step replay of a real print, the ported controller reproduces the original pipeline's speed commands at all 1719 updates."
-  links:
-    - label: "GitHub repository"
-      url: "https://github.com/yem-hjk6th/RSI_proj_ROS"
-  media: []
+    video:
+      src: vision-guided-pellet-extrusion/vision_cl_header.mp4
+      poster: vision-guided-pellet-extrusion/vision_cl_header_poster.jpg
+      caption: "Open loop: the program sets the speed and nothing measures the bead. Closed loop: sensor pairs read the bead and steer the robot's path speed (schematic)."
 - slug: mycelium-mineral-panels
-  title: "Toolpath-informed mycelium-mineral panels"
+  title: "Mycelium-mineral composite panels"
   years: "2025"
   meta:
     role: "Co-author, digital fabrication"
@@ -60,13 +63,29 @@
   role: "Co-author. Digital fabrication: implemented the three toolpath algorithms (Poisson-disk + TSP, Kangaroo, Hilbert), computed the predicted growth area, and printed the panels on the KUKA robot."
   credits: "With I. Datta and E. Baharlou (ACADIA 2025)."
   problem: "Printed mineral panels can host mycelium growth, and the printed path shapes how much surface the fungus can colonize."
-  what_i_did: "The paper compares three toolpath strategies (Poisson-disk sampling with a travelling-salesman route, Kangaroo physics, and a recursive Hilbert curve) for robotically printed 400 x 400 mm oyster-shell mineral panels."
+  what_i_did: "Implemented the three toolpath strategies compared in the paper: Poisson-disk sampling with a nearest-neighbour travelling-salesman route and 2-opt optimization, a Kangaroo 2 physics-based relaxation in Grasshopper, and a recursive Hilbert curve in GHPython. Computed the predicted mycelium growth area of each pattern, and printed the oyster-shell mineral panels, up to 400 × 400 mm, with a KUKA KR 10 R1100-2 arm and a WASP LDM extruder (4 mm nozzle, 2 mm layers) programmed through KUKA|prc."
   result: "The Hilbert pattern gave the largest predicted mycelium growth area (44.6% versus 27.9-34.8%)."
   publications: [datta-2025-acadia]
   links:
     - label: "ACADIA 2025 paper"
       url: "https://doi.org/10.52842/conf.acadia.2025.2.170"
-  media: []
+  story:
+    - id: printing-and-panels
+      heading: "Printing and the final panels"
+      body: "A Hilbert panel being printed on the KUKA arm, and the two final panels, colonized by mycelium, stacked on their stand."
+      images:
+        - src: mycelium-mineral-panels/printing_and_stand_pair_v3.jpg
+          alt: "Two photos side by side. Left: against a plain light grey backdrop, a KUKA arm with a blue extruder head prints grey oyster-shell paste in a Hilbert pattern on a square panel. Right: two square panels in wooden frames, stacked upright on a wooden stand against a white backdrop, their Hilbert rails partly covered by white mycelium; the base of the stand is cropped."
+          caption: "Left: printing a Hilbert panel, May 2025. Right: the two final panels on their stand, June 2025."
+  media:
+    thumbnail:
+      src: mycelium-mineral-panels/lead_w18_poster.jpg
+      alt: "On black, a square Hilbert panel with dark grey printed rails and fine orange-red mycelium lines growing in the gaps and partly over the rails; two circles on it lead to detail boxes: hyphae bridging two adjacent rails, and strands spanning the air gap between two stacks of printed beads."
+      fit: contain
+    video:
+      src: mycelium-mineral-panels/lead_w18.mp4
+      poster: mycelium-mineral-panels/lead_w18_poster.jpg
+      caption: "Plane: points from each printed toolpath connected in print order, with the paper's predicted growth areas. Volume: the predicted growth space of one 2 mm layer (red), then the stacked layers. Growth: mycelium drawn from photos of the panels; the two details follow the paper's wording (Sections 3.4 and 4.3) and are schematic."
 - slug: living-column
   title: "Living Column exhibition"
   years: "2025"
@@ -79,7 +98,9 @@
   problem: "Show a printed clay column colonized by mycelium as a built, living object."
   what_i_did: "Robotically printed the clay column to E. Baharlou's pattern design, and installed the display case together with I. Datta."
   result: null
-  links: []
+  links:
+    - label: "Exhibition page (CT .lab, UVA)"
+      url: "https://ct.lab.virginia.edu/?p=234813"
   media:
     thumbnail:
       src: living-column/3-CT-Lab_Bioph.jpg
@@ -94,20 +115,46 @@
         focus: "52% 72%"
         credit: "Photo: CT .lab, University of Virginia, 2025"
 - slug: clay-paste-extruder
-  title: "Clay paste extruder commissioning"
-  years: "2024"
+  title: "Clay extrusion: a speed model for robotic printing"
+  years: "2024 - 2025"
   meta:
     role: "Graduate research assistant"
   tags: [robotics, fabrication]
   role: "Graduate research assistant. I set up the extruder, wiring and control, calibrated its speed, wrote the KUKA robot programs and ran the print trials."
   credits: "Clay recipe and process guidance from I. Datta and E. Baharlou."
-  problem: "Make a paste extruder print reliably on a KUKA KR10 with a clay mix."
-  what_i_did: "Mounted a WASP clay kit on the robot, wired the stepper motor, driver and Arduino controller, calibrated extrusion speed, and mapped water content, air pressure and robot speed over ten trials. Failures such as tubing clogs and controller overheating were diagnosed and documented."
-  result: null
+  problem: "Make a paste extruder print reliably on a KUKA KR10 with a clay mix, at a robot speed that matches the extrusion speed."
+  what_i_did: "Mounted a WASP clay kit on the robot, wired the stepper motor, driver and Arduino controller, calibrated extrusion speed, and mapped water content, air pressure and robot speed over ten trials. From 45 timed bench runs, a regression model predicts the extrusion speed of any air pressure and motor setting, so the settings can be chosen for a target robot speed."
+  story:
+    - id: speed-model
+      heading: "From bench tests to a speed model"
+      body: "Extrusion speed was timed three times for each air pressure and motor setting. Five regression models were compared by holding out one setting at a time and predicting it from the others; a model with a pressure x motor-setting interaction predicted held-out settings about as closely as a stopwatch can measure. Calibrating the motor showed that at 400 pulses per revolution it ran about twice the calculated speed; at 800 the two matched."
+      videos:
+        - src: clay-paste-extruder/clay_speed_concept_v2.mp4
+          poster: clay-paste-extruder/clay_speed_concept_v2_poster.jpg
+          caption: "Schematic of the bench data, the speed model and the motor calibration."
+    - id: column-toolpath
+      heading: "A clay column toolpath"
+      body: "The robot program for the 650 mm clay column of the Living Column exhibition (2025): 153 layers and about 1.6 km of toolpath, drawn here from the .src file."
+      images:
+        - src: clay-paste-extruder/clay_column_toolpath.png
+          alt: "An isometric line drawing on black of a tall tapered column made of 153 stacked layers of a wavy toolpath, lighter towards the top."
+          caption: "Toolpath drawn from the KUKA .src program; toolpath by E. Baharlou."
+      link:
+        label: "Eco-Resilience Tectonics: Living Column exhibition (CT .lab, UVA)"
+        url: "https://ct.lab.virginia.edu/?p=234813"
+  result: "A pressure x motor-setting model learned from 45 timed runs predicts the extrusion speed of an unseen setting within 1.2 mm/s (RMS), close to the stopwatch noise, and gives the extruder settings for a target robot speed."
   links: []
-  media: []
+  media:
+    thumbnail:
+      src: clay-paste-extruder/clay_speed_lead_v3_poster.jpg
+      alt: "On black, a gold heat map of predicted extrusion speed over air pressure and motor setting with a white 8 mm/s contour, next to a clay-coloured grid printed layer by layer."
+      fit: contain
+    video:
+      src: clay-paste-extruder/clay_speed_lead_v3.mp4
+      poster: clay-paste-extruder/clay_speed_lead_v3_poster.jpg
+      caption: "One timed bench run, the speed model learned from 45 of them, the settings it gives for 8 mm/s, a grid printed at the matched robot speed, and what happens to the bead when the robot moves slower or faster (illustrations)."
 - slug: wood-hygroscopic-ml
-  title: "Wood moisture bending: sensing and machine learning"
+  title: "Moisture-driven bending of wood: sensing and prediction"
   years: "2024 - 2025"
   meta:
     role: "First author"
@@ -151,70 +198,328 @@
       src: wood-hygroscopic-ml/lead_radii_v4.mp4
       poster: wood-hygroscopic-ml/lead_radii_v4_poster.jpg
       caption: "Six bilayer samples bending, 3.6 hours in 5 seconds: a circle is fitted to each strip in every frame, then the view pulls back to show the full circles and their radii. Drawn by code on a documentation camera's video; the radii are camera estimates, not the paper's measurements."
-- slug: heat-flux-test-box
-  title: "Heat-flux test box for printed panels"
+- slug: system-design
+  title: "System design"
   years: "2025 - 2026"
   meta:
-    role: "Test box and measurement design"
-  tags: [aec, sensing]
-  role: "Designed the test box and the measurement: heat-flux sensors and thermocouples with 24-bit acquisition on an Arduino, the logging code, and the test protocol following ASTM C1046 and C1155."
-  credits: "With I. Datta and E. Baharlou."
-  problem: "Measure how well printed mycelium-mineral panels resist heat flow in place."
-  what_i_did: "Built an insulated test box with heat-flux sensors and thermocouples, following the ASTM C1046 and C1155 methods, with 24-bit data acquisition on an Arduino and Python analysis. Results are not yet published."
+    role: "Design and build"
+  tags: [robotics, software, sensing]
+  role: "Designed and built three systems: a ROS 2 control stack for KUKA print cells with robot channels in parallel, a simulation of nozzle-tilt planning on a KUKA KR 120 and a KR10, and a heat-flux test box for printed panels. The ROS 2 code was implemented with Claude Code (AI coding assistant)."
+  credits: "ROS 2 repository author: Ye Ma. Chair toolpath by E. Baharlou; KR10 robot model and DP baseline from the kuka-sim repository. Heat-flux test box: with I. Datta and E. Baharlou."
+  problem: "Robotic printing needs a control stack that can be shared and moved between robots, a way to plan the nozzle on non-planar layers before printing, and instruments that measure the printed parts."
+  what_i_did: "Ported the closed-loop printing pipeline to ROS 2 with robot channels in parallel, simulated print programs and nozzle-tilt planning on a KUKA KR 120 and a KR10, and built a heat-flux test box for printed panels."
+  story:
+    - id: ros2-port
+      heading: "ROS 2 control stack with parallel robot channels"
+      body: "The closed-loop pipeline runs as one ROS 2 (Jazzy) graph on an edge PC: camera capture, two bead-width readers, the control law and a session recorder (rosbag2). The same speed commands go to whichever robot channel the cell has: an RSI bridge whose 4 ms reply loop runs in its own process (KUKA KR10), and an EthernetKRL bridge for controllers without RSI (templates, not yet run). The KUKA KR 120 has neither; it takes the commands through KukaVarProxy every 250 ms, in a lab pipeline outside the repository. Safety rules (no path correction, override clamp, watchdog ramp) are enforced in code and tested in CI. In a lock-step replay of a real print, the port reproduces the original pipeline's speed commands at all 1719 updates."
+      videos:
+        - src: system-design/ros_arch.mp4
+          poster: system-design/ros_arch_poster.jpg
+          caption: "The ROS 2 graph: cameras and borescopes, width readers, control law, then RSI, EthernetKRL and KukaVarProxy channels in parallel. Dashed: the KukaVarProxy channel is a lab pipeline, not part of the public repository."
+      link:
+        label: "GitHub repository: RSI_proj_ROS"
+        url: "https://github.com/yem-hjk6th/RSI_proj_ROS"
+    - id: nozzle-tilt
+      heading: "Nozzle-tilt planning for non-planar printing (simulation)"
+      body: "A KR 120 on a linear rail runs a chair print program layer by layer in simulation. The program uses flat layers with a fixed tool, but its walls lean up to 45 degrees from vertical, where flat layers stair-step: there, tilting the nozzle with the surface (non-planar printing) would apply. Concept, work in progress."
+      videos:
+        - src: rl-nonplanar-nozzle-tilt/kr120_chair_lead.mp4
+          poster: rl-nonplanar-nozzle-tilt/kr120_chair_lead_poster.jpg
+          caption: "A KR 120 on a linear rail printing a chair toolpath in simulation (time-lapse; toolpath by E. Baharlou). The red zones mark walls leaning up to 45 degrees, where tilting the nozzle would apply."
+    - id: kr10-toy
+      heading: "A first tilt-planning test on the KR10"
+      body: "A dome-shaped layer of 301 points, ten nozzle tilts per point (0 to 45 degrees), and a reward made of reachability, joint-limit margin, wrist singularity and smoothness, with a slot for a print-quality term. A dynamic-programming (DP) planner gives the exact optimum; a tabular reinforcement-learning (RL) loop is trained on the same task. With the kinematic costs alone, both keep the nozzle vertical. A tilt is only worth planning if print quality depends on it; reinforcement learning is useful once that quality can only be measured on prints, which is the open part of the project."
+      videos:
+        - src: rl-nonplanar-nozzle-tilt/rl_toy_web.mp4
+          poster: rl-nonplanar-nozzle-tilt/rl_toy_web_poster.jpg
+          caption: "KR10 simulation, drawn as a stick figure from forward kinematics, on a dome-shaped layer. Gold: DP planner; blue: reinforcement learning (tabular stub). The quality term in the second half is a placeholder, not a measurement."
+      link:
+        label: "Simulation base: kuka-sim (KR10 model and DP baseline)"
+        url: "https://github.com/yem-hjk6th/kuka-sim"
+    - id: heat-flux-test-box
+      heading: "Heat-flux test box for printed panels"
+      body: "An insulated box measures how well printed mycelium-mineral panels resist heat flow in place: a heating mat and an aluminium plate under the panel, three heat-flux sensors and thermocouples on it, 24-bit acquisition on an Arduino and Python analysis, following the ASTM C1046 and C1155 methods. Results are not yet published."
+      images:
+        - src: heat-flux-test-box/box_section.svg
+          alt: "Labelled half section of the test box with an enlarged view of the layer stack at the panel centre"
+          credit: "Drawing generated from the build documentation"
+        - src: heat-flux-test-box/wiring.svg
+          alt: "Signal chain: three heat-flux sensors to a 24-bit ADC, an Arduino and a PC logger; four thermocouples to a separate logger"
+          credit: "Drawing generated from the logger code"
+  result: "In a lock-step replay of a real print, the ROS 2 port reproduces the original pipeline's speed commands at all 1719 updates."
+  links:
+    - label: "GitHub repository: RSI_proj_ROS"
+      url: "https://github.com/yem-hjk6th/RSI_proj_ROS"
+    - label: "kuka-sim (KR10 model and DP baseline)"
+      url: "https://github.com/yem-hjk6th/kuka-sim"
+  media:
+    thumbnail:
+      src: system-design/kr120_cases_8_v2_poster.jpg
+      alt: "Eight simulated KUKA KR 120 robot arms on rails in a two-row grid, each printing a different blue test shape on a dark bed, one of them a chair."
+      fit: contain
+    video:
+      src: system-design/kr120_cases_8_v2.mp4
+      poster: system-design/kr120_cases_8_v2_poster.jpg
+      caption: "Eight print programs simulated in parallel on a kinematic model of a KUKA KR 120 on a linear rail, each checked for reach, joint limits and workspace. The chair replays a real robot program (toolpath by E. Baharlou); the others are generated test paths."
+- slug: hsr-station-competitions
+  title: "Selected practice work"
+  years: "2020 - 2022"
+  meta:
+    place: "CCTN, Shanghai"
+    role: "Architectural designer"
+  tags: [aec, design]
+  role: "Architectural designer at CCTN in Shanghai, on competition bids for rail stations and on the renewal of an older office tower in a TOD area: Xiayan Road Station was my own design; on the Cixi station bid I designed part of the ancillary podium and the landscape buildings; at Nanjing South I worked on a small part of the interior; I worked on the four-station Weifang-Suqian tender, which included Lanling; on a rail technology innovation centre campus in Chengdu I took one building through design development; and for the office tower renewal I developed one facade scheme, from the facade geometry in Rhino and Grasshopper to the Enscape renders."
+  credits: "Team work at CCTN, Shanghai. Several of the renders are by render studios CCTN commissioned. The three clips are drawn by code from the designs' Rhino exports; the cup outlines at the start of the Lanling clip are redrawn from the scheme's concept slides."
+  problem: "Competition bids for new rail stations and their station areas in eastern China, and the renewal of an older office tower in a transit-oriented development (TOD) area of Shanghai: building form, roof and facade, and renders, delivered to bid deadlines."
+  what_i_did: "Designed Xiayan Road Station, an urban-rail station over an elevated line, from the site model to the final skin in Rhino and Grasshopper. Worked on the Weifang-Suqian high-speed-rail tender for four stations (Anqiu, Yinan, Lanling and Tancheng West), designed part of the ancillary podium and the landscape buildings of the Cixi station bid, and worked on a small part of the interior of Nanjing South. Took one podium building of an R&D campus for a rail technology innovation centre in Chengdu through design development. For the renewal of an older office tower in a TOD area of Shanghai, developed one facade scheme: a single curved surface that wraps the tower, turns into the entrance canopy and is divided into vertical fins."
+  story:
+    - id: xiayan-road
+      heading: "Xiayan Road Station"
+      body: "An urban-rail station over an elevated line, with ancillary blocks and a park beside a river, January to February 2022. My own design. The clip at the top of the page starts from the city around the line: the skyline of the blocks on each side is drawn as a folding screen, both screens are projected onto the two edges of the platform, and the station grows from the track between them. The rest of the clip rebuilds the design from the Rhino exports of that time: the main volume over the line and the ancillary blocks of January 25, then the roof surfaces, slabs, metal fins, glass and louvers of February 11 to 14."
+      images:
+        - src: hsr-station-competitions/xiayan_aerial.jpg
+          alt: "Aerial render: a long white station roof with a wave-like rise in the middle straddles an elevated rail line; low white ancillary blocks with planted roofs stand on both sides, with parking, sports courts and a river park in front."
+          caption: "Aerial view, February 2022."
+    - id: lanling
+      heading: "Lanling Station"
+      body: "Part of the Weifang-Suqian high-speed-rail tender for four stations (Anqiu, Yinan, Lanling and Tancheng West), November 2021 to February 2022; I worked on the four-station tender. The concept of this Lanling scheme came from the town's wine: two bronze wine cups raised together. Stretched out and pressed down, the two cup outlines become the two halves of a long roof, the space between them becomes an arched glass front, and a diamond lattice covers the white shell."
+      images:
+        - src: hsr-station-competitions/lanling_front.jpg
+          alt: "Frontal render of a white lattice-shell station across a wide paved square, the roof rising to an arched glass entrance in the middle and tapering to points at both ends."
+          caption: "Front, December 2021."
+      videos:
+        - src: hsr-station-competitions/lanling_massing.mp4
+          poster: hsr-station-competitions/lanling_massing_poster.jpg
+          caption: "Drawn by code from the scheme's Rhino exports of December 16 and 20, 2021. The cup outlines in the first step are redrawn from the concept slides, and the order of the steps is a reconstruction for illustration. Gold: the part added in each step; greys: the shell; slate: glass."
+    - id: cixi
+      heading: "Cixi Station bid"
+      body: "A station bid with a lake in the middle of the station area, September to October 2021. I designed part of the ancillary podium and the landscape buildings. Both renders come from the bid document."
+      images:
+        - src: hsr-station-competitions/cixi_aerial_station.jpg
+          alt: "Aerial render in soft morning light: a long station with white, upswept roofs over many tracks and a steel footbridge across them; terraced white pavilions stand among trees on the far side, a plaza with red sculptures runs down to a lake, and green-roofed low buildings and a white ribbon-like bridge over a canal are in front."
+          caption: "The station, its ancillary buildings and the lake, October 2021."
+        - src: hsr-station-competitions/cixi_aerial_sunset.jpg
+          alt: "Aerial render at sunset: the station's white roofs at the right edge, a rounded lake with moored boats in front of it, office towers on the left, and low landscape buildings with oval planted roofs among trees in the foreground."
+          caption: "The lake and the landscape buildings at sunset, October 2021."
+    - id: chengdu-rnd-campus
+      heading: "R&D campus, Chengdu"
+      body: "A research campus of five building groups beside a lake in Chengdu, 2021. I took one of its podium buildings through design development, working out its plans, facade and links to the neighbouring blocks."
+      images:
+        - src: hsr-station-competitions/chengdu_campus_lakeside.jpg
+          alt: "Render of a glass-clad research campus seen from a lakeside cycle path: a long low building of stacked, offset glass boxes with a timber-clad base, a taller glass block at its left end and a city skyline behind."
+          caption: "The campus seen from the lakeside path, 2021."
+    - id: office-facade
+      heading: "Renewal of an older office tower in a TOD area"
+      body: "An 18-storey office tower and podium from around 2000, on a ring road in a transit-oriented development (TOD) area of Shanghai, needed a new facade in 2021: its skin and roof looked dated, its entrances were cramped and its round corner column had little presence. I developed one scheme from the existing massing. The old skin and the corner column come off, and a single curved surface wraps the tower: it runs from the roof edge down the facade and out over the podium as the entrance canopy. An arch-shaped notch at the corner opens onto the glass behind it, with metal trims along its edges, and the surface is divided into 44 vertical fins about 1.5 m apart that follow its flow from the canopy up the tower."
+      images:
+        - src: hsr-station-competitions/facade_render_dusk.jpg
+          alt: "Render at dusk of a white office tower wrapped by one finely ribbed curved surface that sweeps down from the roof into a long canopy over a glazed podium, with a tall arch-shaped glass opening at the tower corner."
+          caption: "Enscape render, November 2021."
+      videos:
+        - src: hsr-station-competitions/facade_logic.mp4
+          poster: hsr-station-competitions/facade_logic_poster.jpg
+          caption: "The steps of the scheme as modeled in October and November 2021, drawn from the Rhino exports (orthographic view, flat shading): the existing tower, the corner smoothed into one curve, the wrapping surface, the corner arch and the fins. The clip ends on the aerial render of November 2021. The order of the steps is a reconstruction for illustration."
+    - id: patents
+      heading: "Patents"
+      body: "CN112627665B (granted 2022): a push-out window that opens by motor or by hand, switched by one handle. CN111236790B (granted 2021): a synchronizer that keeps several motorised window openers in step with closed-loop speed control. Co-inventor on both."
   result: null
   links: []
   media:
     thumbnail:
-      src: heat-flux-test-box/box_section_plain.svg
-      alt: "Half section of the insulated test box: heating mat, aluminium plate and printed panel with heat-flux sensors and thermocouples"
-    images:
-      - src: heat-flux-test-box/box_section.svg
-        alt: "Labelled half section of the test box with an enlarged view of the layer stack at the panel centre"
-        credit: "Drawing generated from the build documentation"
-      - src: heat-flux-test-box/wiring.svg
-        alt: "Signal chain: three heat-flux sensors to a 24-bit ADC, an Arduino and a PC logger; four thermocouples to a separate logger"
-        credit: "Drawing generated from the logger code"
-- slug: hsr-station-competitions
-  title: "High-speed-rail station competitions"
-  years: "2021 - 2022"
+      src: hsr-station-competitions/xiayan_aerial.jpg
+      alt: "Aerial render of Xiayan Road Station: a long white wave-shaped roof over an elevated rail line, with white ancillary blocks with planted roofs on both sides."
+      fit: cover
+    video:
+      src: hsr-station-competitions/xiayan_massing.mp4
+      poster: hsr-station-competitions/xiayan_massing_poster.jpg
+      caption: "Xiayan Road Station, drawn by code from the design's Rhino exports: the skylines of both sides projected onto the platform, then the massing of January 25, 2022 and the skin of February 14. Grey: structure and context; blue: existing context (the river, and the blocks whose skyline is read); gold: the part added in each step."
+- slug: student-work
+  title: "Selected student work"
+  years: "2017 - 2021"
   meta:
-    place: "Design firm, Shanghai"
-    role: "Architectural designer"
+    role: "Student projects"
   tags: [aec, design]
-  role: "Architectural designer at a design firm in Shanghai: concept design, station-area urban design and interior modeling; led the competition team for one station (Yinan, Shandong)."
-  credits: "Firm team project."
-  problem: "Competition bids for new high-speed-rail stations."
-  what_i_did: "Contributed to several station competition bids and led the Yinan station team."
+  role: "Graduate and undergraduate projects, 2017-2021."
+  credits: "Shichuangou Village: competition entry; the aerial render is mine. Images come from my portfolios, adapted to the dark page. Clips are redrawn by code or made from the model photographs."
+  problem: "Selected student projects, 2017-2021: graduate work in Los Angeles and undergraduate work in China."
+  what_i_did: "Housing, a workplace, timber joinery, a CLT stair system, a kinetic roof, a village render and prefabricated concrete units."
+  story:
+    - id: terrace-villa
+      heading: "Terrace Villa (2020)"
+      body: "Fall 2020. Graduate studio. Co-living housing of prefabricated units, Leimert Park, Los Angeles. Public co-living zones open the building to the neighbourhood."
+      images:
+        - src: student-work/terrace_villa_birdseye.jpg
+          alt: "Bird's-eye view of a long four-storey building with steel-framed glass facades and tree-planted terraces on every level, beside a street with pedestrians and a large lawn, in warm afternoon light."
+          caption: "Bird's-eye view, 2020."
+    - id: parallel
+      heading: "Parallel (2020)"
+      body: "Spring 2020. Graduate studio. CLT workplace on the LA River, Los Angeles. Three volumes for commuters, residents and tourists, joined by a two-level mixing bar."
+      images:
+        - src: student-work/parallel_detail_axon_legend.jpg
+          alt: "Exploded detail axonometric in white lines on black: glass roof layers, a light-wood CLT frame, long timber staircases and facade fins pulled apart, with numbered leader lines and a legend of 41 building parts beside it."
+          caption: "Exploded detail axonometric with legend."
+    - id: clt-egress-stairs
+      heading: "CLT Egress Stairs (2020)"
+      body: "Spring 2020. Personal project. Stair system made of CLT planks: tenons in preset wall holes carry the stringer, and two workers assemble a staircase by hand. Clip at the top of the page."
+    - id: roof-aperture
+      heading: "Interactive Roof Aperture (2020)"
+      body: "Fall 2020. Personal project. Kinetic roof model for people with dementia: servo-driven apertures and LEDs, controlled through an Arduino board with light sensors."
+      videos:
+        - src: student-work/roof_aperture.mp4
+          poster: student-work/roof_aperture_poster.jpg
+          caption: "Closed with LEDs on at night, lowered by day; redrawn by code. Gold: moving; white: light."
+      images:
+        - src: student-work/roof_aperture_photos_dark.jpg
+          alt: "Twelve round fisheye photographs of the model room's ceiling in two rows, labelled from 2:00 a.m. to 12:00 a.m.: dark views with a single glow, and bright views with nine round apertures."
+          caption: "Model photographs, every two hours."
+    - id: ply-tenon
+      heading: "Ply Tenon (2018)"
+      body: "Spring 2018. Undergraduate studio. Prefabricated plywood timber houses with glue-less joints that are assembled by hand, Hancheng, Shaanxi."
+      videos:
+        - src: student-work/ply_tenon_beam_column.mp4
+          poster: student-work/ply_tenon_beam_column_poster.jpg
+          caption: "Beam-column joint, 1:3 model photographs."
+        - src: student-work/ply_tenon_column_base.mp4
+          poster: student-work/ply_tenon_column_base_poster.jpg
+          caption: "Column-base joint, 1:3 model photographs."
+    - id: sanhe-dreamland
+      heading: "SanHe Dreamland (2018)"
+      body: "2018. Personal project. A long section through the day-labour quarter of Sanhe, Longhua, Shenzhen: bunk rooms, internet cafes and rooftops where people wait out the day."
+      videos:
+        - src: student-work/sanhe_dreamland.mp4
+          poster: student-work/sanhe_dreamland_poster.jpg
+          caption: "The long section, inverted, with idle figures animated."
+    - id: shichuangou-village
+      heading: "Shichuangou Village (2018)"
+      body: "2018. Undergraduate competition, First Prize. Heritage conservation of a mountain village, Lantian County, Shaanxi. The aerial render is mine."
+      images:
+        - src: student-work/shichuangou_aerial.jpg
+          alt: "Aerial render of a green mountain valley in mist: a stream and a winding road run past small grey-roofed village houses among trees, with ridges fading into the distance."
+          caption: "Aerial render."
+    - id: section-x
+      heading: "Section X (2017)"
+      body: "Spring 2017. Undergraduate studio. Housing for young graduates in an urban village, Haidian, Beijing, built from prefabricated concrete units."
+      images:
+        - src: student-work/section_x_explosion_legend.jpg
+          alt: "Axonometric in white lines on black: prefabricated concrete room units, wall panels, windows, doors and roof and floor layers exploded outward along six directions from a central unit, each part coded, with a legend of 59 parts beside it."
+          caption: "Six-axis exploded axonometric of the prefabricated units, with legend."
   result: null
   links: []
-  media: []
-- slug: cs6501-3dcv-pointcloud-robustness
-  title: "Point-cloud classifier robustness benchmark"
-  years: "2026"
+  media:
+    thumbnail:
+      src: student-work/ply_tenon_beam_column_final.jpg
+      alt: "Photograph of the assembled 1:3 plywood beam-column joint: a column with main, secondary and cross beams locked in by tenons, on black."
+      fit: contain
+    video:
+      src: student-work/clt_stairs_assembly_v3.mp4
+      poster: student-work/clt_stairs_assembly_v3_poster.jpg
+      caption: "CLT Egress Stairs: tenons drop into the preset wall holes, the stringer is hung on them in two moves, then the landing, treads and risers; redrawn by code. Gold: the part being placed."
+- slug: cs-projects
+  title: "Computer science projects"
+  years: "2022 - 2026"
   meta:
-    place: "CS 6501 course, UVA"
-    role: "Team project, phase 1"
-  tags: [cv, 3d]
-  status: draft
-  role: "Phase 1 of a team project (CS 6501 3D Computer Vision): a benchmark of how missing geometry affects point-cloud classifiers."
-  credits: "Team project."
-  problem: "Point-cloud classifiers are trained on complete shapes, but real scans are partial."
-  what_i_did: "Phase 1: benchmark how missing geometry (random drop, patch and part removal, planar cut, limited views) changes classifier accuracy and calibration."
-  result: null
-  links: []
-  media: []
-- slug: cs6501-fourier-net-registration
-  title: "Fourier-Net deformable image registration"
-  years: "2024"
-  meta:
-    place: "CS 6501 course, UVA"
-    role: "Team project: training and evaluation"
+    place: "UVA and earlier"
+    role: "Course projects and a short paper"
   tags: [cv, ml]
-  status: draft
-  role: "Application, training and evaluation of an existing model (from the original Fourier-Net authors), run on a university HPC cluster. I also wrote the introduction, background and conclusion."
-  credits: "Team project (CS 6501 Machine Learning in Image Analysis)."
-  problem: "Does a registration network trained on MNIST digits carry over to unseen QuickDraw shapes?"
-  what_i_did: "Trained and evaluated Fourier-Net and Fourier-Net-Diff on MNIST and tested transfer to unseen shapes using Dice overlap."
-  result: null
+  role: "Small computer science projects: a single-author conference paper on EEG emotion recognition (2022), and course projects in two CS 6501 courses at UVA: Machine Learning in Image Analysis (team project, evaluation) and signal processing (course work)."
+  credits: "EEG paper: single author (IEEE ICFTIC 2022); data: SEED dataset (BCMI laboratory). Fourier-Net: team project; model and code from the original Fourier-Net authors. EEG data in the signal-processing sections: CHB-MIT Scalp EEG Database v1.0.0 (Guttag, 2010, PhysioNet; Shoeb, 2009, MIT PhD thesis), Open Data Commons Attribution License v1.0. All audio is synthesised; no course recordings are used."
+  problem: "Small projects, each around one question: can a CNN read emotion from EEG turned into colour images; does a registration network trained on digits align shapes it has never seen; and what do classic signal-processing ideas look and sound like?"
+  what_i_did: "Trained a CNN on EEG recordings mapped to colour images; tested 16 Fourier-Net-Diff registration models on unseen sketch classes (80 test runs); and animated and sonified topics from a signal-processing course."
+  story:
+    - id: eeg-emotion-cnn
+      heading: "EEG emotion recognition with a CNN (2022, paper)"
+      body: "Filtered 62-channel EEG from the SEED dataset, turned each recording into a colour image by mapping theta, alpha and beta plus low-gamma band amplitudes to red, green and blue, and trained a convolutional network to separate positive from negative emotion. The CNN reached 89.5% accuracy, against 76.8% for Gaussian naive Bayes and 73.0% for an SVM."
+      videos:
+        - src: eeg-emotion-cnn/eeg_cnn_pipeline_v3.mp4
+          poster: eeg-emotion-cnn/eeg_cnn_pipeline_v3_poster.jpg
+          caption: "The paper's pipeline re-drawn: 62 electrodes, band amplitudes mapped to colour, the CNN, and the results of the paper's Table 1. The signals in the clip are synthetic."
+    - id: fourier-net
+      heading: "Fourier-Net: transfer to unseen shapes (2024)"
+      body: "Tested 16 Fourier-Net-Diff models, each trained on an MNIST digit set, on five unseen QuickDraw classes (circle, envelope, moon, T-shirt, triangle): 80 test runs, scored by Dice overlap. Median Dice was 0.47-0.58 per class (envelope highest, triangle lowest), and the model trained on digit 1 was the weakest in every class. My part: application and evaluation on a university HPC cluster, and the report's introduction, background and conclusion. The video at the top of this page shows the experiment."
+    - id: fourier-follow-up
+      heading: "Fourier-Net follow-up (unpublished)"
+      body: "In an unpublished feasibility trial I trained the same kind of model on time-lapse clips of bending wood strips. With larger frame gaps and a loss restricted to the strips, it followed about 85% of the strip-tip motion, but not the curvature trend; classical optical flow did better on these clips."
+    - id: karplus-strong
+      heading: "Signal processing (2025): plucked string"
+      body: "A noise burst circulates in a delay loop with a two-sample average; each pass removes high frequencies, so the tone decays like a plucked string. Play the bursts alone, then the same bursts through the loop."
+      videos:
+        - src: cs6501-dsp-visualisations/dsp_karplus_strong.mp4
+          poster: cs6501-dsp-visualisations/dsp_karplus_strong_poster.jpg
+          caption: "Karplus-Strong synthesis, re-implemented from a course demo (not a submitted assignment); 110 Hz, loop gain 0.996."
+      audios:
+        - src: cs6501-dsp-visualisations/ks_input_noise_bursts.mp3
+          label: "Input: six noise bursts"
+        - src: cs6501-dsp-visualisations/ks_output_strings.mp3
+          label: "Output: through the loop"
+          caption: "Loop length set by each note's pitch (A3 to A4), loop gain 0.996."
+    - id: comb-filters
+      heading: "Signal processing: echo and reverb from comb filters"
+      body: "A feed-forward comb filter adds one delayed copy of the signal (an echo); a feedback comb filter feeds the output back, so the copies repeat and decay (reverb). Summing four feedback filters with different delays gives a denser reverb. Delays and gains are those of the assignment: 100 ms and 0.75, then 100, 90, 120 and 110 ms with gains 0.75, 0.80, 0.77 and 0.73."
+      audios:
+        - src: cs6501-dsp-visualisations/comb_dry.mp3
+          label: "Original: a dry synthesised phrase"
+        - src: cs6501-dsp-visualisations/comb_ffcf_echo.mp3
+          label: "Feed-forward comb: echo"
+        - src: cs6501-dsp-visualisations/comb_fbcf_reverb.mp3
+          label: "Feedback comb: reverb"
+        - src: cs6501-dsp-visualisations/comb_four_fbcf.mp3
+          label: "Four feedback combs in parallel"
+          caption: "The assignment used a course speech recording; here the same filters are applied to a synthesised phrase. All four clips are matched in loudness."
+    - id: eeg-stft
+      heading: "Signal processing: a seizure in the spectrogram"
+      body: "During the annotated seizure, power rose by 16 dB at 0.5-4 Hz and by 11 dB at 13-30 Hz compared with the two minutes before."
+      videos:
+        - src: cs6501-dsp-visualisations/dsp_eeg_stft.mp4
+          poster: cs6501-dsp-visualisations/dsp_eeg_stft_poster.jpg
+          caption: "CHB-MIT record chb01_18, channel 1, 1600-1900 s; short-time Fourier transform with a 2 s Hann window. The steady lines near 16 and 32 Hz run through the whole record."
+    - id: window-leakage
+      heading: "Signal processing: spectral leakage"
+      body: "A strong tone between two frequency bins hides a tone 50 dB weaker; a Hann window lowers the leakage at the weak tone from -36 dB to -93 dB."
+      videos:
+        - src: cs6501-dsp-visualisations/dsp_window_leakage.mp4
+          poster: cs6501-dsp-visualisations/dsp_window_leakage_poster.jpg
+          caption: "A synthetic signal, rectangular window morphing into a Hann window."
+  publications: [ma-2022-icftic]
+  result: "EEG: the CNN reached 89.5% accuracy on positive versus negative emotion. Fourier-Net: median Dice was 0.47-0.58 per unseen class, and the model trained on digit 1 was the weakest in every class."
   links: []
-  media: []
+  media:
+    thumbnail:
+      src: cs6501-fourier-net-registration/fourier_net_transfer_poster.jpg
+      alt: "Heatmap of Dice scores for 16 digit-trained registration models on five sketch classes, with the digit-1 row outlined in red and per-class medians from 0.47 to 0.58."
+      fit: contain
+    video:
+      src: cs6501-fourier-net-registration/fourier_net_transfer.mp4
+      poster: cs6501-fourier-net-registration/fourier_net_transfer_poster.jpg
+      caption: "Fourier-Net course project: sixteen Fourier-Net-Diff models, each trained on a MNIST digit set, tested without retraining on five unseen QuickDraw shape classes (80 runs), with real test outputs. The opening method sketch is an illustration on a synthetic pair."
+- slug: tachi-miura-bellows
+  title: "Tachi-Miura polyhedron bellows"
+  years: "2022 - 2023"
+  meta:
+    role: "Sole author"
+  tags: [aec, fabrication]
+  role: "Sole author: folded the paper and cardboard models, analysed their folding geometry and ran the radial load tests."
+  credits: "Single-author paper (Journal of Physics: Conference Series, 2023)."
+  problem: "Tachi-Miura polyhedron bellows fold flat and open again, but how much load they carry across their axis had hardly been tested."
+  what_i_did: "Folded Tachi-Miura bellows from paper and 120 gsm cardboard with different crease parameters, related their folding angles to the sheet geometry, and measured the largest radial load each model carried at increasing axial pre-compression."
+  story:
+    - id: radial-load
+      heading: "Radial load test"
+      body: "Each step compresses the bellows axially, which sets its base width and folding angle, then loads it across its axis. The capacity jumps once the folding angle enters the self-locking range."
+      videos:
+        - src: tachi-miura-bellows/bellows_radial_load.mp4
+          poster: tachi-miura-bellows/bellows_radial_load_poster.jpg
+          caption: "The radial load test re-drawn from the paper's Table 4: each step compresses the bellows axially (base width W'), then loads it radially; the folding angle follows from W' and the 210 mm sheet width. Side view schematic."
+  result: "The radial capacity rose with axial pre-compression and jumped once the folding angle reached the self-locking range: the 120 gsm cardboard bellows carried 8.5 kg under radial load."
+  publications: [ma-2023-jpcs]
+  links:
+    - label: "JPCS paper (open access)"
+      url: "https://doi.org/10.1088/1742-6596/2469/1/012014"
+  media:
+    thumbnail:
+      src: tachi-miura-bellows/tmp_fold_axon_v8_poster.jpg
+      alt: "Axonometric view of a closed Tachi-Miura bellows made of two folded sheets between a base slab and a load plate, a gold arrow pressing down, counter reading 8.5 kg, fold angle 55.15 degrees."
+      fit: contain
+    video:
+      src: tachi-miura-bellows/tmp_fold_axon_v8.mp4
+      poster: tachi-miura-bellows/tmp_fold_axon_v8_poster.jpg
+      caption: "From one sheet to a bellows: ridge and valley creases (paper Fig. 4, Table 2, model D) fold rigidly, a second sheet joins it edge to edge into a hollow tube, and the radial load test steps through the six fold angles of Table 4 up to 8.5 kg (120 gsm cardboard). Rigid-folding simulation, axonometric view."

@@ -28,6 +28,9 @@ const bySlug: Record<string, Motif> = {
   'hsr-station-competitions': 'plan',
   'cs6501-3dcv-pointcloud-robustness': 'cloud',
   'cs6501-fourier-net-registration': 'warp',
+  'cs-coursework': 'warp',
+  'cs-projects': 'warp',
+  'system-design': 'flux',
 };
 const all: Motif[] = ['raster', 'graph', 'hilbert', 'contour', 'spiral', 'arcs', 'plan', 'cloud', 'warp', 'flux'];
 

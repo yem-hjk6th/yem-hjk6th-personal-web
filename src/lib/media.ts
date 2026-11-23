@@ -52,6 +52,7 @@ const FOCUS = /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/;
 
 /** Raster image (or video poster) by its path under src/assets/media/. */
 export const rasterAsset = (src: string): ImageMetadata | null => raster[PREFIX + src] ?? null;
+export const svgAsset = (src: string): string | null => svgs[PREFIX + src] ?? null;
 
 export function resolveImage(img: MediaImage | undefined, slug: string): ResolvedImage | null {
   if (!img) return null;
@@ -71,4 +72,11 @@ export function resolveVideo(v: MediaVideo | undefined, slug: string) {
   if (!v.src) throw new Error(`${slug}: media video needs src`);
   const url = fs.existsSync(path.join(videoRoot, v.src)) ? `/media/${v.src}` : null;
   return { ...v, url, poster: v.poster ? rasterAsset(v.poster) : null, path: `public/media/${v.src}` };
+}
+
+/** Story audio: public/media/<path>, served unchanged. A missing file fails the build. */
+export interface MediaAudio { src: string; label: string; caption?: string }
+export function resolveAudio(a: MediaAudio, slug: string) {
+  if (!fs.existsSync(path.join(videoRoot, a.src))) throw new Error(`${slug}: story audio public/media/${a.src} is not in the repo`);
+  return { ...a, url: `/media/${a.src}` };
 }

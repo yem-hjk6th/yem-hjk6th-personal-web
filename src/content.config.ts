@@ -56,6 +56,8 @@ const storySection = z.object({
   body: text,
   images: z.array(storyImage).optional(),
   videos: z.array(mediaVideo).optional(),
+  // Audio clips (public/media/<slug>/*.mp3), each with its own play button; never autoplayed or preloaded.
+  audios: z.array(z.object({ src: text, label: text, caption: text.optional() }).strict()).optional(),
   link: z.object({ label: text, url: z.string().regex(/^(\/|https:\/\/)/, 'link url must start with / or https://') }).strict().optional(),
 }).strict();
 
